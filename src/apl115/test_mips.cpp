@@ -45,7 +45,6 @@ int main(){
 
 	uint32_t PC;
 	err = mips_cpu_get_pc(cpu, &PC);
-	cout << PC << endl;
 
 	uint32_t result;
 	err = mips_cpu_get_register(cpu, 3, &result);
@@ -76,7 +75,6 @@ int main(){
 	err = mips_cpu_set_register(cpu, 3, 300);
 
 	err = mips_cpu_step(cpu);
-	cout << PC << endl;
 	err = mips_cpu_get_register(cpu, 3, &result);
 
 	passed = (result == 0b00001010);
@@ -103,12 +101,38 @@ int main(){
 	err = mips_cpu_set_register(cpu, 12, 69);
 
 	err = mips_cpu_step(cpu);
-	cout << PC << endl;
 	err = mips_cpu_get_register(cpu, 12, &result);
 
 	passed = (result == 0b10101111);
 
 	mips_test_end_test(testId, passed, "Result was 0b10101111");
+
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("XOR");
+	passed = 0;
+
+	instruction = (0ul << 26) | (7ul << 21) | (8ul << 16) | (9ul) << 11 | (0ul << 6) | (0x26 << 0);
+
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 7, 0b00001111);
+	err = mips_cpu_set_register(cpu, 8, 0b10101010);
+	err = mips_cpu_set_register(cpu, 9, 69);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 9, &result);
+
+	passed = (result == 0b10100101);
+	cout << result << endl;
+
+	mips_test_end_test(testId, passed, "Result was 0b10100101");
 
 
 	mips_test_end_suite();
