@@ -60,3 +60,11 @@ mips_error XOR(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	result = rs ^ rt;
 	return mips_cpu_set_register(state, rd, result);
 }
+
+mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
+
+	uint32_t result;
+	result = (rs < rt);
+	return mips_cpu_set_register(state, rd, result);
+
+}

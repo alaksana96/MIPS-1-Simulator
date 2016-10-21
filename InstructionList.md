@@ -45,7 +45,7 @@ SLLV  |  Shift left logical variable              | 3  XXX      |
 SLT   |  Set on less than (signed)                | 2  XX       |
 SLTI  |  Set on less than immediate (signed)      | 3  XXX      |
 SLTIU |  Set on less than immediate unsigned      | 3  XXX      |
-SLTU  |  Set on less than unsigned                | 1  X        |
+SLTU  |  Set on less than unsigned                | 1  X        | YES
 SRA   |  Shift right arithmetic                   | 2  XX       |
 SRAV  |  Shift right arithmetic                   | 2  XX       |
 SRL   |  Shift right logical                      | 2  XX       |

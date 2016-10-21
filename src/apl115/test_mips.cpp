@@ -153,18 +153,59 @@ int main(){
 	err = mips_cpu_get_register(cpu, 9, &result);
 
 	passed = (result == 0b10100101);
-	cout << result << endl;
-	mips_test_end_test(testId, passed, "Result was 0b10100101");
+	mips_test_end_test(testId, passed, "Result was: 0b10100101");
+
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("SLTU");
+	passed = 0;
+
+	instruction = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2B << 0);
+
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 60);
+	err = mips_cpu_set_register(cpu, 17, 780);
+	err = mips_cpu_set_register(cpu, 18, 69);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 18, &result);
+
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was: True");
+
+	testId = mips_test_begin_test("SLTU");
+	passed = 0;
+
+	instruction = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2B << 0);
+
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 6000);
+	err = mips_cpu_set_register(cpu, 17, 780);
+	err = mips_cpu_set_register(cpu, 18, 69);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 18, &result);
+
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was: False");
 
 
 	mips_test_end_suite();
 
-	//uint32_t instruction = 0b00000010101011101010001010110000;
-
-	//uint32_t rs,rt,rd,shft,func;
-
-	//decodeJInstruction(instruction);
-	//decodeOpCode(instruction);
 
 	return 0;
 }
