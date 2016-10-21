@@ -22,6 +22,7 @@ int main(){
 	mips_test_begin_suite();
 
 	/*#######################################################################*/
+
 	int testId = mips_test_begin_test("ADDU");
 	int passed = 0;
 
@@ -55,6 +56,30 @@ int main(){
 
 	/*#######################################################################*/
 
+	testId = mips_test_begin_test("SUBU");
+	passed = 0;
+
+	instruction = (0ul << 26) | (13ul << 21) | (14ul << 16) | (15ul << 11) | (0ul << 6) | (0x23 << 0);
+
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 13, 100);
+	err = mips_cpu_set_register(cpu, 14, 60);
+	err = mips_cpu_set_register(cpu, 15, 6969);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 15, &result);
+
+	passed = (result == 40);
+	mips_test_end_test(testId, passed, "Result was: 40");
+	/*#######################################################################*/
+
 	testId = mips_test_begin_test("AND");
 	passed = 0;
 
@@ -78,7 +103,6 @@ int main(){
 	err = mips_cpu_get_register(cpu, 3, &result);
 
 	passed = (result == 0b00001010);
-
 	mips_test_end_test(testId, passed, "Result was: 0b00001010");
 
 	/*#######################################################################*/
@@ -104,7 +128,6 @@ int main(){
 	err = mips_cpu_get_register(cpu, 12, &result);
 
 	passed = (result == 0b10101111);
-
 	mips_test_end_test(testId, passed, "Result was 0b10101111");
 
 	/*#######################################################################*/
@@ -131,7 +154,6 @@ int main(){
 
 	passed = (result == 0b10100101);
 	cout << result << endl;
-
 	mips_test_end_test(testId, passed, "Result was 0b10100101");
 
 

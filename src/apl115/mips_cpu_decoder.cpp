@@ -97,6 +97,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 35:
 			//SUBU
+			return SUBU(srca, srcb, rd, state);
 			break;
 		case 36:
 			//AND

@@ -32,6 +32,13 @@ mips_error ADDU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 
 }
 
+mips_error SUBU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
+
+	uint32_t result;
+	result = rs - rt;
+	return mips_cpu_set_register(state, rd, result);
+}
+
 mips_error AND(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 
 	uint32_t result;

@@ -51,7 +51,7 @@ SRAV  |  Shift right arithmetic                   | 2  XX       |
 SRL   |  Shift right logical                      | 2  XX       |
 SRLV  |  Shift right logical variable             | 3  XXX      | 
 SUB   |  Subtract                                 | 2  XX       |
-SUBU  |  Subtract unsigned                        | 1  X        |
+SUBU  |  Subtract unsigned                        | 1  X        | YES
 SW    |  Store word                               | 2  XX       |
 XOR   |  Bitwise exclusive or                     | 1  X        | YES
 XORI  |  Bitwise exclusive or immediate           | 2  XX       |
