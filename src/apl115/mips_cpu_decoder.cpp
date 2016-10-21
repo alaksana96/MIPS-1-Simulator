@@ -23,6 +23,11 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	shift = (instr & 0x7C0) >> 6;
 	func = instr & 0x3F;
 
+	uint32_t srca, srcb, result;
+	mips_error err;
+	err = mips_cpu_get_register(state, rs, &srca);
+	err = mips_cpu_get_register(state, rt, &srcb);
+
 	switch(func)
 	{
 		case 0:
@@ -85,7 +90,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 33:
 			//ADDU
-			return ADDU(rs, rt, rd, state);
+			return ADDU(srca, srcb, rd, state);
 			break;
 		case 34:
 			//SUB
@@ -95,6 +100,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 36:
 			//AND
+			return AND(srca, srcb, rd, state);
 			break;
 		case 37:
 			//OR
