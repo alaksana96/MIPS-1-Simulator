@@ -8,7 +8,7 @@
 #include "mips.h"
 #include "mips_cpu_decoder.h"
 #include "mips_cpu_instructions.h"
-#include <iostream>
+#include <assert.h>
 
 using namespace std;
 
@@ -115,19 +115,23 @@ mips_error mips_cpu_step(
 ){
 	uint8_t buffer[4];
 
-	mips_error err = mips_mem_read(state->mem, state->pc, 4,buffer);
+	uint32_t pcOrig, pcGot;
 
-	if(err!=0){
+
+	mips_error err = mips_cpu_get_pc(state, &pcOrig);
+	pcGot = pcOrig + 4;
+	err = mips_mem_read(state->mem, state->pc, 4,buffer);
+	err = mips_cpu_set_pc(state, pcGot); //Move to next address
+
+	if(err!=mips_Success){
+		mips_cpu_get_pc(state, &pcGot);
+		assert(pcOrig == pcGot);
 		return err; //Why did this fail?
 	}
 
 	uint32_t instr = littleToBig(buffer); //Start working in BigEndian
 
 	err = decodeInstruction(instr, state->mem, state);
-
-	//if(decodeInstruction(instr) != 0){
-		//return decodeInstruction(instr);
-	//}
 
 	return mips_Success;
 
