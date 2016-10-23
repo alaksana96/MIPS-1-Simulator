@@ -6,18 +6,24 @@
  */
 
 #include "mips.h"
-
+#include <iostream>
 
 using namespace std;
 
 mips_error ADD(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 
-	uint32_t a, b;
+	int32_t as, bs;
+	as = (int32_t)rs;
+	bs = (int32_t)rt;
 
-	mips_error err = mips_cpu_get_register(state, rs, &a);
-	err = mips_cpu_get_register(state, rt, &b);
 
-	int32_t result = (int32_t)a + (int32_t)b;
+	int32_t result = as + bs;
+
+	if(((as > 0 && bs > 0) && result < 0) || (((as < 0) && (bs < 0)) && result > 0)){
+		return mips_ExceptionArithmeticOverflow;
+	}
+
+	return mips_cpu_set_register(state, rd, (uint32_t)result);
 
 }
 /*
