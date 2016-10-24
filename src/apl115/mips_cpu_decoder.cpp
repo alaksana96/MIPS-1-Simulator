@@ -168,6 +168,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		//ORI
 		return ORI(srca, rt, immed16, state);
 		break;
+	case 14:
+		//XORI
+		return XORI(srca, rt, immed16, state);
+		break;
 	}
 
 	return mips_ErrorNotImplemented;

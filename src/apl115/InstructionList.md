@@ -54,4 +54,4 @@ SUB   |  Subtract                                 | 2  XX       | YES
 SUBU  |  Subtract unsigned                        | 1  X        | YES
 SW    |  Store word                               | 2  XX       |
 XOR   |  Bitwise exclusive or                     | 1  X        | YES
-XORI  |  Bitwise exclusive or immediate           | 2  XX       |
+XORI  |  Bitwise exclusive or immediate           | 2  XX       | YES
