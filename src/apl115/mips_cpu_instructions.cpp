@@ -89,13 +89,15 @@ mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 /**************************************************************************************/
 
 mips_error ADDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
-
 	int16_t immedSign = (int16_t)immed;
-
 	if(((!isNegative32(rs) && !isNegative16(immed)) && isNegative32((uint32_t)((int32_t)rs + (int32_t)immedSign)))
 		||
 	((isNegative32(rs) && isNegative16(immed)) && !isNegative32((uint32_t)((int32_t)rs + (int32_t)immedSign)))){
 		return mips_ExceptionArithmeticOverflow;
 	}
 	return mips_cpu_set_register(state, rt, (uint32_t)((int32_t)rs + (int32_t)immedSign));
+}
+
+mips_error ADDIU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
+	return mips_cpu_set_register(state, rt, (rs + (uint32_t)immed));
 }

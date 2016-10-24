@@ -730,6 +730,30 @@ int main(){
 	passed = (result == 100);
 	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
 
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("ADDIU");
+	passed = 0;
+
+	instruction = (0b001001 << 26) | (16ul << 21) | (17ul << 16) | (0x1 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 60);
+	err = mips_cpu_set_register(cpu, 17, 780);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 17, &result);
+
+	passed = (result == 61);
+	mips_test_end_test(testId, passed, "Result was: 61");
+
+	/*#######################################################################*/
 
 	mips_test_end_suite();
 

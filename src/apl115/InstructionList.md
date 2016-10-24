@@ -3,8 +3,8 @@
 Code  |   Meaning                                 | Complexity  | Implemented  | Tested
 ------|-------------------------------------------|-------------|--------------|----------
 ADD   |  Add (with overflow)                      | 2  XX       | YES             |
-ADDI  |  Add immediate (with overflow)            | 2  XX       | YES|
-ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       ||
+ADDI  |  Add immediate (with overflow)            | 2  XX       | YES  	|
+ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       | YES |
 ADDU  |  Add unsigned (no overflow)               | 1  X        | YES |
 AND   |  Bitwise and                              | 1  X        | YES |
 ANDI  |  Bitwise and immediate                    | 2  XX       | |

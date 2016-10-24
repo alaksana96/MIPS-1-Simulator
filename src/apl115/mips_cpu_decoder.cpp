@@ -156,6 +156,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		//ADDI
 		return ADDI(srca, rt, immed16, state);
 		break;
+	case 9:
+		//ADDIU
+		return ADDIU(srca, rt, immed16, state);
+		break;
 	}
 
 	return mips_ErrorNotImplemented;
