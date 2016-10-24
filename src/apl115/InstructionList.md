@@ -1,26 +1,26 @@
 
 
-Code  |   Meaning                                 | Complexity  | Implemented
-------|-------------------------------------------|-------------|--------------
-ADD   |  Add (with overflow)                      | 2  XX       |
-ADDI  |  Add immediate (with overflow)            | 2  XX       |
-ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       |
-ADDU  |  Add unsigned (no overflow)               | 1  X        | YES
-AND   |  Bitwise and                              | 1  X        | YES
-ANDI  |  Bitwise and immediate                    | 2  XX       |
-BEQ   |  Branch on equal                          | 3  XXX      |
-BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      |
-BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     |
-BGTZ  |  Branch on greater than zero              | 3  XXX      |
-BLEZ  |  Branch on less than or equal to zero     | 3  XXX      |
-BLTZ  |  Branch on less than zero                 | 3  XXX      |
-BLTZAL|  Branch on less than zero and link        | 4  XXXX     |
-BNE   |  Branch on not equal                      | 3  XXX      |
-DIV   |  Divide                                   | 4  XXXX     |
-DIVU  |  Divide unsigned                          | 4  XXXX     |
-J     |  Jump                                     | 3  XXX      |
-JALR  |  Jump and link register                   | 4  XXXX     |
-JAL   |  Jump and link                            | 4  XXXX     |
+Code  |   Meaning                                 | Complexity  | Implemented  | Tested
+------|-------------------------------------------|-------------|--------------|----------
+ADD   |  Add (with overflow)                      | 2  XX       | YES             |
+ADDI  |  Add immediate (with overflow)            | 2  XX       ||
+ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       ||
+ADDU  |  Add unsigned (no overflow)               | 1  X        | YES |
+AND   |  Bitwise and                              | 1  X        | YES |
+ANDI  |  Bitwise and immediate                    | 2  XX       | |
+BEQ   |  Branch on equal                          | 3  XXX      | |
+BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      ||
+BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     ||
+BGTZ  |  Branch on greater than zero              | 3  XXX      ||
+BLEZ  |  Branch on less than or equal to zero     | 3  XXX      ||
+BLTZ  |  Branch on less than zero                 | 3  XXX      ||
+BLTZAL|  Branch on less than zero and link        | 4  XXXX     ||
+BNE   |  Branch on not equal                      | 3  XXX      ||
+DIV   |  Divide                                   | 4  XXXX     ||
+DIVU  |  Divide unsigned                          | 4  XXXX     ||
+J     |  Jump                                     | 3  XXX      ||
+JALR  |  Jump and link register                   | 4  XXXX     ||
+JAL   |  Jump and link                            | 4  XXXX     ||
 JR    |  Jump register                            | 3  XXX      |
 LB    |  Load byte                                | 3  XXX      |
 LBU   |  Load byte unsigned                       | 3  XXX      |
