@@ -1,7 +1,7 @@
 
 
-Code  |   Meaning                                 | Complexity  | Implemented  |
-------|-------------------------------------------|-------------|--------------|
+Code  |   Meaning                                 | Complexity  | Implemented  | Tested
+------|-------------------------------------------|-------------|--------------|----------
 ADD   |  Add (with overflow)                      | 2  XX       |              |
 ADDI  |  Add immediate (with overflow)            | 2  XX       ||
 ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       ||
