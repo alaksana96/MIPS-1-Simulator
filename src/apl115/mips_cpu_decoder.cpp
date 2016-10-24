@@ -146,10 +146,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 	uint16_t immed16 = (uint16_t)immed;
 
-	uint32_t srca;
+	uint32_t srca, srcb;
 	mips_error err;
 	err = mips_cpu_get_register(state, rs, &srca);
-
+	err = mips_cpu_get_register(state, rt, &srcb);
 	switch(opcode)
 	{
 	case 8:
@@ -172,6 +172,12 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		//XORI
 		return XORI(srca, rt, immed16, state);
 		break;
+
+	case 43:
+		//SW
+		return SW(srca, srcb, immed16, state, mem);
+		break;
+
 	}
 
 	return mips_ErrorNotImplemented;

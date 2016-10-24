@@ -29,3 +29,4 @@ mips_error ADDIU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state)
 mips_error ANDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
 mips_error ORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
 mips_error XORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
+mips_error SW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem);

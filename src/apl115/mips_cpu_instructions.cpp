@@ -19,6 +19,8 @@ bool isNegative16(uint16_t val){
 	return ((val >> 15) == 1);
 }
 
+
+
 mips_error SLL(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, (rt << sa));
 }
@@ -112,4 +114,16 @@ mips_error ORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 
 mips_error XORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rt, (rs ^ ((uint32_t)immed)));
+}
+
+mips_error SW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
+	uint8_t buffer[4];
+	buffer[0] = (rt >> 24) & 0xFF;
+	buffer[1] = (rt >> 16) & 0xFF;
+	buffer[2] = (rt >> 8) & 0xFF;
+	buffer[3] = (rt>> 0) & 0xFF;
+
+	cout << bitset<32>(rs + (uint32_t)((int16_t)immed)) << endl;
+	return mips_mem_write(mem, (rs + (uint32_t)((int16_t)immed)), 4,buffer);
+
 }
