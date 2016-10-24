@@ -101,3 +101,7 @@ mips_error ADDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 mips_error ADDIU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rt, (rs + (uint32_t)immed));
 }
+
+mips_error ANDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
+	return mips_cpu_set_register(state, rt, (rs & ((uint32_t)immed)));
+}

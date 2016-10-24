@@ -7,7 +7,7 @@ ADDI  |  Add immediate (with overflow)            | 2  XX       | YES  	|
 ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       | YES |
 ADDU  |  Add unsigned (no overflow)               | 1  X        | YES |
 AND   |  Bitwise and                              | 1  X        | YES |
-ANDI  |  Bitwise and immediate                    | 2  XX       | |
+ANDI  |  Bitwise and immediate                    | 2  XX       | YES |
 BEQ   |  Branch on equal                          | 3  XXX      | |
 BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      ||
 BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     ||
