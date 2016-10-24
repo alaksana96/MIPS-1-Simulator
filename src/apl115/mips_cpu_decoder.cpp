@@ -37,6 +37,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 		case 2:
 			//SRL
+			SRL(srcb, rd, shift, state);
 			break;
 		case 3:
 			//SRA

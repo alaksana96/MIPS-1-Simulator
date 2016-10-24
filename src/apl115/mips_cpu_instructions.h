@@ -8,6 +8,7 @@
 #include "mips.h"
 
 mips_error SLL(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state);
+mips_error SRL(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state);
 mips_error ADD(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state);
 mips_error ADDU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state);
 mips_error SUB(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state);

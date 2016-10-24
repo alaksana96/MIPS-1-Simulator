@@ -48,7 +48,7 @@ SLTIU |  Set on less than immediate unsigned      | 3  XXX      |
 SLTU  |  Set on less than unsigned                | 1  X        | YES
 SRA   |  Shift right arithmetic                   | 2  XX       |
 SRAV  |  Shift right arithmetic                   | 2  XX       |
-SRL   |  Shift right logical                      | 2  XX       |
+SRL   |  Shift right logical                      | 2  XX       | YES
 SRLV  |  Shift right logical variable             | 3  XXX      | 
 SUB   |  Subtract                                 | 2  XX       | YES
 SUBU  |  Subtract unsigned                        | 1  X        | YES
