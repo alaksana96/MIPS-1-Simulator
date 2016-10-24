@@ -15,8 +15,11 @@ using namespace std;
 
 struct mips_cpu_impl{
 	uint32_t pc;
+	uint32_t pcNext;
 	uint32_t regs[32];
 	mips_mem_h mem;
+	unsigned logLevel;
+	FILE *logFile;
 };
 
 mips_cpu_h mips_cpu_create(mips_mem_h mem){
@@ -137,9 +140,17 @@ mips_error mips_cpu_step(
 
 }
 
+mips_error mips_cpu_set_debug_level(mips_cpu_h h, unsigned level, FILE *dest){
 
+	h->logLevel = level;
+	h->logFile = dest;
+	return mips_Success;
 
+}
 
+void mips_cpu_free(mips_cpu_h state){
+	mips_mem_free(state->mem);
+}
 
 
 

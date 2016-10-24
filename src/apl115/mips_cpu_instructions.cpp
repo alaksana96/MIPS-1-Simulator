@@ -7,70 +7,43 @@
 
 #include "mips.h"
 #include <iostream>
+#include <bitset>
 
 using namespace std;
 
+bool isNegative(uint32_t val){
+	return ((val >> 31) == 1);
+}
+
 mips_error ADD(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
-
-	int32_t as, bs;
-	as = (int32_t)rs;
-	bs = (int32_t)rt;
-
-
-	int32_t result = as + bs;
-
-	if(((as > 0 && bs > 0) && result < 0) || (((as < 0) && (bs < 0)) && result > 0)){
+	if(((!isNegative(rs) && !isNegative(rt)) && isNegative((uint32_t)((int32_t)rs + (int32_t)rt)))
+		||
+	((isNegative(rs) && isNegative(rt)) && !isNegative((uint32_t)((int32_t)rs + (int32_t)rt)))){
 		return mips_ExceptionArithmeticOverflow;
 	}
-
-	return mips_cpu_set_register(state, rd, (uint32_t)result);
-
+	return mips_cpu_set_register(state, rd, (uint32_t)((int32_t)rs + (int32_t)rt));
 }
-/*
- * Takes the values in the source registers rs and rt, does the ADDU and stores
- * the result in the register rd
- */
 mips_error ADDU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
-
-	uint32_t result;
-	result = rs + rt;
-	return mips_cpu_set_register(state, rd, result);
-
+	return mips_cpu_set_register(state, rd, (rs + rt));
 }
 
 mips_error SUBU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
-
-	uint32_t result;
-	result = rs - rt;
-	return mips_cpu_set_register(state, rd, result);
+	return mips_cpu_set_register(state, rd, (rs - rt));
 }
 
 mips_error AND(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
-
-	uint32_t result;
-	result = rs & rt;
-	return mips_cpu_set_register(state, rd, result);
-
+	return mips_cpu_set_register(state, rd, (rs & rt));
 }
 
 mips_error OR(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
-
-	uint32_t result;
-	result = rs | rt;
-	return mips_cpu_set_register(state, rd, result);
+	return mips_cpu_set_register(state, rd, rs | rt);
 }
 
 mips_error XOR(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
-
-	uint32_t result;
-	result = rs ^ rt;
-	return mips_cpu_set_register(state, rd, result);
+	return mips_cpu_set_register(state, rd, (rs ^ rt));
 }
 
 mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
-
-	uint32_t result;
-	result = (rs < rt);
-	return mips_cpu_set_register(state, rd, result);
-
+	return mips_cpu_set_register(state, rd, (rs < rt));
 }
+

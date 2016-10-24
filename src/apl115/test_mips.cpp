@@ -92,8 +92,8 @@ int main(){
 	err = mips_cpu_get_pc(cpu, &PC);
 	err = mips_mem_write(mem, PC, 4, buffer);
 
-	err = mips_cpu_set_register(cpu, 13, 0x7FFFFFF);
-	err = mips_cpu_set_register(cpu, 14, 2);
+	err = mips_cpu_set_register(cpu, 13, INT32_MAX);
+	err = mips_cpu_set_register(cpu, 14, 1);
 	err = mips_cpu_set_register(cpu, 15, 6969);
 
 	err = mips_cpu_step(cpu);
@@ -103,7 +103,7 @@ int main(){
 
 	passed = (result == 6969);
 	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
-/*
+
 	testId = mips_test_begin_test("ADD");
 	passed = 0;
 
@@ -124,9 +124,9 @@ int main(){
 	err = mips_cpu_step(cpu);
 	err = mips_cpu_get_register(cpu, 15, &result);
 
-	passed = (err == mips_ExceptionArithmeticOverflow) && (result == 6969);
+	passed = (result == 6969);
 	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
-*/
+
 	/*#######################################################################*/
 	testId = mips_test_begin_test("ADDU");
 	passed = 0;

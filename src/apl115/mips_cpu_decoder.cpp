@@ -124,6 +124,8 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 	}
 
+	return mips_ErrorNotImplemented;
+
 }
 
 mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* state){
@@ -135,6 +137,8 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	rt = (instr & 0x1F0000) >> 16;
 	immed = (instr & 0xFFFF);
 
+	return mips_ErrorNotImplemented;
+
 }
 
 
@@ -144,6 +148,19 @@ mips_error decodeJInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 	opcode = instr >> 26;
 	target = (instr & 0x3FFFFFF);
+
+	switch(opcode)
+	{
+	case 0b000010:
+		//J
+		break;
+
+	case 0b000011:
+		//JAL
+		break;
+	}
+
+	return mips_ErrorNotImplemented;
 
 }
 
@@ -155,12 +172,20 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 
 	switch (opcode)
 	{
-	case 0b000000:
+	case 0:
 		decodeRInstruction(instr, mem, state);
 		break;
 
-	case 0b000001:
-		cout << "fdas";
+	case 2: //J
+		decodeJInstruction(instr, mem, state);
+		break;
+
+	case 3: //JAL
+		decodeJInstruction(instr, mem, state);
+		break;
+
+	default :
+		decodeIInstruction(instr, mem, state);
 		break;
 
 	}
