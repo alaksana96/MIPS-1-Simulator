@@ -37,7 +37,7 @@ MTLO  |  Move to LO                               | 3  XXX      |
 MULT  |  Multiply                                 | 4  XXXX     |
 MULTU |  Multiply unsigned                        | 4  XXXX     |
 OR    |  Bitwise or                               | 1  X        | YES
-ORI   |  Bitwise or immediate                     | 2  XX       |
+ORI   |  Bitwise or immediate                     | 2  XX       | YES
 SB    |  Store byte                               | 3  XXX      |
 SH    |  Store half-word                          | 3  XXX      |
 SLL   |  Shift left logical                       | 2  XX       | YES
