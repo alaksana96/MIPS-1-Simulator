@@ -122,6 +122,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 42:
 			//SLT
+			return SLT(srca, srcb, rd, state);
 			break;
 		case 43:
 			//SLTU
