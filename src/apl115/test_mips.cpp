@@ -15,6 +15,9 @@ using namespace std;
 #define INT32_MAX 0x7FFFFFFF
 #define INT32_MIN 0x80000000
 
+#define INT16_MAX 0x7FFF
+#define INT16_MIN 0x8000
+
 
 int main(){
 
@@ -637,6 +640,95 @@ int main(){
 
 	passed = (result == 0);
 	mips_test_end_test(testId, passed, "Result was: False");
+
+
+/***************************************************************************************************************/
+
+	testId = mips_test_begin_test("ADDI");
+	passed = 0;
+
+	instruction = (0b001000 << 26) | (16ul << 21) | (17ul << 16) | (0x1 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 60);
+	err = mips_cpu_set_register(cpu, 17, 780);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 17, &result);
+
+	passed = (result == 61);
+	mips_test_end_test(testId, passed, "Result was: 61");
+
+
+	testId = mips_test_begin_test("ADDI");
+	passed = 0;
+
+	instruction = (0b001000 << 26) | (16ul << 21) | (17ul << 16) | (0xF001 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, -60);
+	err = mips_cpu_set_register(cpu, 17, 780);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 17, &result);
+
+	passed = (result == -4155);
+	mips_test_end_test(testId, passed, "Result was: -4155");
+
+
+	testId = mips_test_begin_test("ADDI");
+	passed = 0;
+
+	instruction = (0b001000 << 26) | (16ul << 21) | (17ul << 16) | (0x1 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, INT32_MAX);
+	err = mips_cpu_set_register(cpu, 17, 780);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 17, &result);
+
+	passed = (result == 780);
+	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
+
+	testId = mips_test_begin_test("ADDI");
+	passed = 0;
+
+	instruction = (0b001000 << 26) | (16ul << 21) | (17ul << 16) | (0x8000 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, INT32_MIN);
+	err = mips_cpu_set_register(cpu, 17, 100);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 17, &result);
+
+	passed = (result == 100);
+	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
 
 
 	mips_test_end_suite();

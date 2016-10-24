@@ -118,7 +118,8 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			return XOR(srca, srcb, rd, state);
 			break;
 		case 39:
-			//NOR
+			//NOR NOT IN DT SPEC
+			return NOR(srca, srcb, rd, state);
 			break;
 		case 42:
 			//SLT
@@ -142,6 +143,20 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	rs = (instr & 0x3E00000) >> 21;
 	rt = (instr & 0x1F0000) >> 16;
 	immed = (instr & 0xFFFF);
+
+	uint16_t immed16 = (uint16_t)immed;
+
+	uint32_t srca;
+	mips_error err;
+	err = mips_cpu_get_register(state, rs, &srca);
+
+	switch(opcode)
+	{
+	case 8:
+		//ADDI
+		return ADDI(srca, rt, immed16, state);
+		break;
+	}
 
 	return mips_ErrorNotImplemented;
 
