@@ -32,16 +32,16 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	{
 		case 0:
 			//SLL
-			SLL(srcb, rd, shift, state);
+			return SLL(srcb, rd, shift, state);
 			break;
 
 		case 2:
 			//SRL
-			SRL(srcb, rd, shift, state);
+			return SRL(srcb, rd, shift, state);
 			break;
 		case 3:
 			//SRA
-			SRA(srcb, rd, shift, state);
+			return SRA(srcb, rd, shift, state);
 			break;
 		case 4:
 			//SLLV
@@ -51,6 +51,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 7:
 			//SRAV
+			return SRAV(srca, srcb, rd, state);
 			break;
 		case 8:
 			//JR
