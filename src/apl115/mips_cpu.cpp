@@ -15,7 +15,7 @@ using namespace std;
 
 struct mips_cpu_impl{
 	uint32_t pc;
-	uint32_t pcNext;
+	uint32_t pcNext  = pc+4;
 	uint32_t regs[32];
 	mips_mem_h mem;
 	unsigned logLevel;

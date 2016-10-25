@@ -25,7 +25,7 @@ mips_error SLT(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state);
 mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state);
 
 /**********************************************************************************/
-
+mips_error BEQ(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
 mips_error ADDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
 mips_error ADDIU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
 mips_error SLTI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);

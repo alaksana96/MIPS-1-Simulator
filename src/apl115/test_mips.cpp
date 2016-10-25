@@ -8,7 +8,7 @@
 #include "mips.h"
 #include <bitset>
 #include <iostream>
-#include "mips_cpu_decoder.h"
+
 
 using namespace std;
 
@@ -1285,7 +1285,6 @@ int main(){
 
 	passed = (result == 400);
 	mips_test_end_test(testId, passed, "Result: 40, was written to 0x000F0005");
-
 
 
 	mips_test_end_suite();

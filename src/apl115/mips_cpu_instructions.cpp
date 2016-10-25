@@ -103,6 +103,15 @@ mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 
 /**************************************************************************************/
 
+mips_error BEQ(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
+	if(rs == rt){
+		&state->pc = state->pcNext;
+		&state->pcNext = state->pcNext + (uint32_t)(((int32_t)((int16_t)immed) << 2));
+		return mips_Success;
+	}
+	return mips_cpu_set_pc(state, state->pc);
+}
+
 mips_error ADDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	int16_t immedSign = (int16_t)immed;
 	if(((!isNegative32(rs) && !isNegative16(immed)) && isNegative32((uint32_t)((int32_t)rs + (int32_t)immedSign)))

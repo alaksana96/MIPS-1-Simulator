@@ -154,6 +154,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	err = mips_cpu_get_register(state, rt, &srcb);
 	switch(opcode)
 	{
+	case 6:
+		//BEQ
+		return BEQ(srca, srcb, immed16, state);
+		break;
 	case 8:
 		//ADDI
 		return ADDI(srca, rt, immed16, state);
