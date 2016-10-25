@@ -37,6 +37,10 @@ mips_error SRA(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, ((uint32_t)((int32_t)rt >> sa)));
 }
 
+mips_error SRLV(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
+	return mips_cpu_set_register(state, rd, (rt >> (rs & 0x1F)));
+}
+
 mips_error SLLV(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, (rt << (rs & 0x1F)));
 }

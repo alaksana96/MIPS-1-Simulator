@@ -49,7 +49,7 @@ SLTU  |  Set on less than unsigned                | 1  X        | YES
 SRA   |  Shift right arithmetic                   | 2  XX       | YES
 SRAV  |  Shift right arithmetic                   | 2  XX       | YES
 SRL   |  Shift right logical                      | 2  XX       | YES
-SRLV  |  Shift right logical variable             | 3  XXX      | 
+SRLV  |  Shift right logical variable             | 3  XXX      | YES
 SUB   |  Subtract                                 | 2  XX       | YES
 SUBU  |  Subtract unsigned                        | 1  X        | YES
 SW    |  Store word                               | 2  XX       | YES
