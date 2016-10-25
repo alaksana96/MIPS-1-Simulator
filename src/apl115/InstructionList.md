@@ -39,7 +39,7 @@ MULTU |  Multiply unsigned                        | 4  XXXX     |
 OR    |  Bitwise or                               | 1  X        | YES
 ORI   |  Bitwise or immediate                     | 2  XX       | YES
 SB    |  Store byte                               | 3  XXX      | YES | -ve by 4, +ve by 1 and 2
-SH    |  Store half-word                          | 3  XXX      |
+SH    |  Store half-word                          | 3  XXX      | YES | Need to check for unaligned
 SLL   |  Shift left logical                       | 2  XX       | YES
 SLLV  |  Shift left logical variable              | 3  XXX      | YES
 SLT   |  Set on less than (signed)                | 2  XX       | YES

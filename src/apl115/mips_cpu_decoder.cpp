@@ -195,6 +195,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		//SB
 		return SB(srca, srcb, immed16, state, mem);
 		break;
+	case 41:
+		//SH
+		return SH(srca, srcb, immed16, state, mem);
+		break;
 	case 43:
 		//SW
 		return SW(srca, srcb, immed16, state, mem);
