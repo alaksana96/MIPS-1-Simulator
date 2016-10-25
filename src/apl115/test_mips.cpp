@@ -36,6 +36,7 @@ int main(){
 	int testId, passed;
 	mips_error err;
 	uint32_t instruction, result;
+	uint8_t temp8;
 	uint8_t buffer[4];
 	uint32_t PC = 0;
 
@@ -1023,6 +1024,107 @@ int main(){
 
 	passed = (result == 0b1010);
 	mips_test_end_test(testId, passed, "Result was 0b1010");
+
+
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("SRLV");
+	passed = 0;
+
+	instruction = (0ul << 26) | (10ul << 21) | (11ul << 16) | (12ul) << 11 | (0ul << 6) | (0x6 << 0);
+
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 10, 4);
+	err = mips_cpu_set_register(cpu, 11, 0b10101010);
+	err = mips_cpu_set_register(cpu, 12, 69);
+
+	err = mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 12, &result);
+
+	passed = (result == 0b1010);
+	mips_test_end_test(testId, passed, "Result was 0b1010");
+
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("SB");
+	passed = 0;
+
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFC << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 0x000F0004);
+	err = mips_cpu_set_register(cpu, 17, 210);
+
+	err = mips_cpu_step(cpu);
+	err = mips_mem_read(mem, 0x000F0000, 1, &temp8);
+
+	result = (uint32_t)temp8;
+
+	passed = (result == 210);
+	mips_test_end_test(testId, passed, "Result: 210, was written to 0x000F0000");
+
+	testId = mips_test_begin_test("SB");
+	passed = 0;
+
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0x0002 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 0x000F0004);
+	err = mips_cpu_set_register(cpu, 17, 69);
+
+	err = mips_cpu_step(cpu);
+
+	err = mips_mem_read(mem, 0x000F0006, 1, &temp8);
+
+	result = (uint32_t)temp8;
+
+	passed = (result == 69);
+	mips_test_end_test(testId, passed, "Result: 40, was written to 0x000F0006");
+
+
+
+	testId = mips_test_begin_test("SB");
+	passed = 0;
+
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0x0001 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 0x000F0004);
+	err = mips_cpu_set_register(cpu, 17, 40);
+
+	err = mips_cpu_step(cpu);
+
+	err = mips_mem_read(mem, 0x000F0005, 1, &temp8);
+
+	result = (uint32_t)temp8;
+
+	passed = (result == 40);
+	mips_test_end_test(testId, passed, "Result: 40, was written to 0x000F0005");
 
 
 	mips_test_end_suite();

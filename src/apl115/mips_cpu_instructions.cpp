@@ -147,6 +147,11 @@ mips_error LW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mi
 	return mips_cpu_set_register(state, rt, (uint32_t)((int32_t)littleToBigRead(buffer)));
 }
 
+mips_error SB(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
+	uint8_t buffer = (uint8_t)(0x000000FF & rt);
+	return mips_mem_write(mem,(rs + (uint32_t)((int16_t)immed)) , 1, &buffer);
+}
+
 mips_error SW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
 	uint8_t buffer[4];
 	buffer[0] = (rt >> 24) & 0xFF;
