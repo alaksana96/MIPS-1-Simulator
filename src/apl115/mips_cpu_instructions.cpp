@@ -108,6 +108,14 @@ mips_error ADDIU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state)
 	return mips_cpu_set_register(state, rt, (rs + (uint32_t)immed));
 }
 
+mips_error SLTIU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
+
+	uint32_t immedExtended = (uint32_t)((int32_t)((int16_t)immed));
+
+	return mips_cpu_set_register(state, rt, (rs < immedExtended));
+}
+
+
 mips_error ANDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rt, (rs & ((uint32_t)immed)));
 }

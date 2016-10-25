@@ -160,6 +160,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		//ADDIU
 		return ADDIU(srca, rt, immed16, state);
 		break;
+	case 11:
+		//SLTIU
+		return SLTIU(srca, rt, immed16, state);
+		break;
 	case 12:
 		//ANDI
 		return ANDI(srca, rt, immed16, state);
