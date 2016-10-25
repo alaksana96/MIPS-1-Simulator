@@ -1056,7 +1056,7 @@ int main(){
 	testId = mips_test_begin_test("SB");
 	passed = 0;
 
-	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFC << 0);
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFC << 0); //-4
 	buffer[0] = (instruction >> 24) & 0xFF;
 	buffer[1] = (instruction >> 16) & 0xFF;
 	buffer[2] = (instruction >> 8) & 0xFF;
@@ -1074,12 +1074,62 @@ int main(){
 	result = (uint32_t)temp8;
 
 	passed = (result == 210);
-	mips_test_end_test(testId, passed, "Result: 210, was written to 0x000F0000");
+	mips_test_end_test(testId, passed, "Result: 210, was written to 0x000F0000"); //-2
 
 	testId = mips_test_begin_test("SB");
 	passed = 0;
 
-	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0x0002 << 0);
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFE << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 0x000F0004);
+	err = mips_cpu_set_register(cpu, 17, 0xFF);
+
+	err = mips_cpu_step(cpu);
+	err = mips_mem_read(mem, 0x000F0002, 1, &temp8);
+
+	result = (uint32_t)temp8;
+
+	passed = (result == 0xFF);
+	mips_test_end_test(testId, passed, "Result: 0xFF, was written to 0x000F0002");
+
+
+	testId = mips_test_begin_test("SB");
+	passed = 0;
+
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFF << 0); //-1
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 0x000F0004);
+	err = mips_cpu_set_register(cpu, 17, 0xEE);
+
+	err = mips_cpu_step(cpu);
+	err = mips_mem_read(mem, 0x000F0003, 1, &temp8);
+
+	result = (uint32_t)temp8;
+
+	cout << result << endl;
+	passed = (result == 0xEE);
+	mips_test_end_test(testId, passed, "Result: 0xEE, was written to 0x000F0003");
+
+
+
+	testId = mips_test_begin_test("SB");
+	passed = 0;
+
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0x0002 << 0); //+2
 	buffer[0] = (instruction >> 24) & 0xFF;
 	buffer[1] = (instruction >> 16) & 0xFF;
 	buffer[2] = (instruction >> 8) & 0xFF;
@@ -1105,7 +1155,7 @@ int main(){
 	testId = mips_test_begin_test("SB");
 	passed = 0;
 
-	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0x0001 << 0);
+	instruction = (0b101000 << 26) | (16ul << 21) | (17ul << 16) | (0x0001 << 0); //+1
 	buffer[0] = (instruction >> 24) & 0xFF;
 	buffer[1] = (instruction >> 16) & 0xFF;
 	buffer[2] = (instruction >> 8) & 0xFF;
