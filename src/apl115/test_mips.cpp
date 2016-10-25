@@ -974,13 +974,13 @@ int main(){
 	passed = (result == 0);
 	mips_test_end_test(testId, passed, "Result was: False");
 
-
 	/*#######################################################################*/
 
-	testId = mips_test_begin_test("SLTI");
+	testId = mips_test_begin_test("SLLV");
 	passed = 0;
 
-	instruction = (0b001010 << 26) | (16ul << 21) | (17ul << 16) | (0x00FF << 0);
+	instruction = (0ul << 26) | (10ul << 21) | (11ul << 16) | (12ul) << 11 | (0ul << 6) | (0x4 << 0);
+
 	buffer[0] = (instruction >> 24) & 0xFF;
 	buffer[1] = (instruction >> 16) & 0xFF;
 	buffer[2] = (instruction >> 8) & 0xFF;
@@ -989,39 +989,16 @@ int main(){
 	err = mips_cpu_get_pc(cpu, &PC);
 	err = mips_mem_write(mem, PC, 4, buffer);
 
-	err = mips_cpu_set_register(cpu, 16, (uint32_t)(-1));
-	err = mips_cpu_set_register(cpu, 17, 0b1);
+	err = mips_cpu_set_register(cpu, 10, 4);
+	err = mips_cpu_set_register(cpu, 11, 0b10101010);
+	err = mips_cpu_set_register(cpu, 12, 69);
 
 	err = mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, 17, &result);
+	err = mips_cpu_get_register(cpu, 12, &result);
 
-	cout << result << endl;
+	passed = (result == 0xAA0);
+	mips_test_end_test(testId, passed, "Result was 0b101010100000");
 
-	passed = (result == 1);
-	mips_test_end_test(testId, passed, "Result was: True");
-
-	testId = mips_test_begin_test("SLTI");
-	passed = 0;
-
-	instruction = (0b001010 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFF << 0);
-	buffer[0] = (instruction >> 24) & 0xFF;
-	buffer[1] = (instruction >> 16) & 0xFF;
-	buffer[2] = (instruction >> 8) & 0xFF;
-	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
-
-	err = mips_cpu_get_pc(cpu, &PC);
-	err = mips_mem_write(mem, PC, 4, buffer);
-
-	err = mips_cpu_set_register(cpu, 16, 1000);
-	err = mips_cpu_set_register(cpu, 17, 0b1);
-
-	err = mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, 17, &result);
-
-	cout << result << endl;
-
-	passed = (result == 0);
-	mips_test_end_test(testId, passed, "Result was: True");
 
 	mips_test_end_suite();
 
