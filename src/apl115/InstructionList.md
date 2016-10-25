@@ -22,7 +22,7 @@ J     |  Jump                                     | 3  XXX      ||
 JALR  |  Jump and link register                   | 4  XXXX     ||
 JAL   |  Jump and link                            | 4  XXXX     ||
 JR    |  Jump register                            | 3  XXX      |
-LB    |  Load byte                                | 3  XXX      |
+LB    |  Load byte                                | 3  XXX      | YES | NOT TESTED
 LBU   |  Load byte unsigned                       | 3  XXX      |
 LH    |  Load half-word                           | 3  XXX      | 
 LHU   |  Load half-word unsigned                  | 3  XXX      | 

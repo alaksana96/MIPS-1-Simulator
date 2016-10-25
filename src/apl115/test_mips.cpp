@@ -1126,6 +1126,9 @@ int main(){
 	passed = (result == 40);
 	mips_test_end_test(testId, passed, "Result: 40, was written to 0x000F0005");
 
+	/*#######################################################################*/
+
+
 
 	mips_test_end_suite();
 

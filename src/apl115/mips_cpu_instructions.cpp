@@ -138,6 +138,12 @@ mips_error XORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rt, (rs ^ ((uint32_t)immed)));
 }
 
+mips_error LB(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
+	uint8_t buffer;
+	mips_error c = mips_mem_read(mem, (rs + (uint32_t)((int16_t)immed)), 1, &buffer);
+	return mips_cpu_set_register(state, rt, (uint32_t)buffer);
+}
+
 mips_error LW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
 	uint8_t buffer[4];
 	mips_error c = mips_mem_read(mem, (rs + (uint32_t)((int16_t)immed)), 4, buffer);
