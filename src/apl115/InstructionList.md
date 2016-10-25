@@ -41,7 +41,7 @@ ORI   |  Bitwise or immediate                     | 2  XX       | YES
 SB    |  Store byte                               | 3  XXX      |
 SH    |  Store half-word                          | 3  XXX      |
 SLL   |  Shift left logical                       | 2  XX       | YES
-SLLV  |  Shift left logical variable              | 3  XXX      | 
+SLLV  |  Shift left logical variable              | 3  XXX      | YES
 SLT   |  Set on less than (signed)                | 2  XX       | YES
 SLTI  |  Set on less than immediate (signed)      | 3  XXX      | YES
 SLTIU |  Set on less than immediate unsigned      | 3  XXX      | YES
