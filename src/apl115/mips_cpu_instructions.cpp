@@ -122,8 +122,9 @@ mips_error SW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mi
 	buffer[1] = (rt >> 16) & 0xFF;
 	buffer[2] = (rt >> 8) & 0xFF;
 	buffer[3] = (rt>> 0) & 0xFF;
-
-	cout << bitset<32>(rs + (uint32_t)((int16_t)immed)) << endl;
+	if((rs + (uint32_t)((int16_t)immed)) % 4 != 0){
+		return mips_ExceptionInvalidAddress;
+	}
 	return mips_mem_write(mem, (rs + (uint32_t)((int16_t)immed)), 4,buffer);
 
 }
