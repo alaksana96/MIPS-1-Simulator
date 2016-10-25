@@ -120,7 +120,6 @@ mips_error mips_cpu_step(
 
 	uint32_t pcOrig, pcGot;
 
-
 	mips_error err = mips_cpu_get_pc(state, &pcOrig);
 	pcGot = pcOrig + 4;
 	err = mips_mem_read(state->mem, state->pc, 4,buffer);

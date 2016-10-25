@@ -19,6 +19,10 @@ bool isNegative16(uint16_t val){
 	return ((val >> 15) == 1);
 }
 
+uint32_t littleToBigRead(const uint8_t *memData){
+	return (((uint32_t)memData[0]) << 24) | (((uint32_t)memData[1] << 16)) | (((uint32_t)memData[2]) << 8) | (((uint32_t)memData[3]));
+}
+
 
 
 mips_error SLL(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state){
@@ -114,6 +118,15 @@ mips_error ORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 
 mips_error XORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rt, (rs ^ ((uint32_t)immed)));
+}
+
+mips_error LW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
+	uint8_t buffer[4];
+	mips_error c = mips_mem_read(mem, (rs + (uint32_t)((int16_t)immed)), 4, buffer);
+	if((rs + (uint32_t)((int16_t)immed)) % 4 != 0){
+		return mips_ExceptionInvalidAddress;
+	}
+	return mips_cpu_set_register(state, rt, (uint32_t)((int32_t)littleToBigRead(buffer)));
 }
 
 mips_error SW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){

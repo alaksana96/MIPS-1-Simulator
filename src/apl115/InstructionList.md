@@ -27,7 +27,7 @@ LBU   |  Load byte unsigned                       | 3  XXX      |
 LH    |  Load half-word                           | 3  XXX      | 
 LHU   |  Load half-word unsigned                  | 3  XXX      | 
 LUI   |  Load upper immediate                     | 2  XX       |
-LW    |  Load word                                | 2  XX       |
+LW    |  Load word                                | 2  XX       | YES
 LWL   |  Load word left                           | 5  XXXXX    |
 LWR   |  Load word right                          | 5  XXXXX    |
 MFHI  |  Move from HI                             | 3  XXX      |
@@ -52,6 +52,6 @@ SRL   |  Shift right logical                      | 2  XX       | YES
 SRLV  |  Shift right logical variable             | 3  XXX      | 
 SUB   |  Subtract                                 | 2  XX       | YES
 SUBU  |  Subtract unsigned                        | 1  X        | YES
-SW    |  Store word                               | 2  XX       |
+SW    |  Store word                               | 2  XX       | YES
 XOR   |  Bitwise exclusive or                     | 1  X        | YES
 XORI  |  Bitwise exclusive or immediate           | 2  XX       | YES
