@@ -160,6 +160,20 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 	switch(opcode)
 	{
+	case 1:
+
+		switch(rt)
+		{
+		case 1:
+			//BGEZ
+			BGEZ(rs, immed, state);
+			break;
+
+		}
+
+
+		break;
+
 	case 4:
 		//BEQ
 		return BEQ(srca, srcb, immed16, state);
@@ -249,16 +263,18 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	uint32_t opcode;
 	mips_error err;
 
+	uint32_t originalPC, originalPCNext;
+	err = mips_cpu_get_pc(state, &originalPC);
+	err = mips_cpu_get_pc_next(state, &originalPCNext);
+
+	bool flag = 0;
+
 	opcode = instr >> 26;
 
 	switch (opcode)
 	{
 	case 0:
 		decodeRInstruction(instr, mem, state);
-		uint32_t currentPC, nextPC;
-		err = mips_cpu_get_pc(state, &currentPC);
-		err = mips_cpu_set_pc(state, nextPC); //Move to next address
-		err = mips_cpu_set_pc_next(state, nextPC + 4);
 		break;
 
 	case 2: //J
@@ -270,18 +286,19 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 		break;
 
 	default :
-		if(opcode != 4){
-			uint32_t currentPC, nextPC;
-			err = mips_cpu_get_pc(state, &currentPC);
-			err = mips_cpu_set_pc(state, nextPC); //Move to next address
-			err = mips_cpu_set_pc_next(state, nextPC + 4);
-		}
-
 		decodeIInstruction(instr, mem, state);
 		break;
 
 	}
 
+	uint32_t checkPC, checkPCNext;
+	err = mips_cpu_get_pc(state, &checkPC);
+	err = mips_cpu_get_pc_next(state, &checkPCNext);
+
+	if(opcode != 4 && opcode != 1){
+	err = mips_cpu_set_pc(state, originalPCNext);
+	err = mips_cpu_set_pc_next(state, originalPCNext+4);
+	}
 
 	return mips_ErrorNotImplemented;
 }

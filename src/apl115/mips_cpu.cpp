@@ -10,6 +10,7 @@
 #include "mips_cpu_decoder.h"
 #include "mips_cpu_instructions.h"
 #include <assert.h>
+#include <iostream>
 
 using namespace std;
 
@@ -134,7 +135,6 @@ mips_error mips_cpu_step(
 	uint32_t instr = littleToBig(buffer); //Start working in BigEndian
 
 	err = decodeInstruction(instr, state->mem, state);
-
 
 
 

@@ -106,6 +106,18 @@ mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 
 /**************************************************************************************/
 
+mips_error BGEZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
+	uint32_t currentPC, nextPC;
+	mips_error err = mips_cpu_get_pc(state, &currentPC);
+	err = mips_cpu_get_pc_next(state, &nextPC);
+	if((rs >> 31) == 0){
+		err = mips_cpu_set_pc(state, nextPC);
+
+		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
+	}
+	return mips_cpu_set_pc(state, nextPC);
+}
+
 mips_error BEQ(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	uint32_t currentPC, nextPC;
 	mips_error err = mips_cpu_get_pc(state, &currentPC);

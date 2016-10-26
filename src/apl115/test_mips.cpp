@@ -40,7 +40,10 @@ int main(){
 	uint8_t temp8;
 	uint8_t buffer[4];
 	uint32_t PC = 0;
+	uint32_t PCNext = 4;
 
+	err = mips_cpu_set_pc(cpu,PC);
+	err = mips_cpu_set_pc_next(cpu, PCNext);
 
 	/*#######################################################################*/
 
@@ -1250,7 +1253,6 @@ int main(){
 
 	passed = (result == 69);
 	mips_test_end_test(testId, passed, "Result was: 50000");
-
 	/*#######################################################################*/
 
 	testId = mips_test_begin_test("SH");
@@ -1287,15 +1289,16 @@ int main(){
 	passed = (result == 400);
 	mips_test_end_test(testId, passed, "Result: 40, was written to 0x000F0005");
 
+	err = mips_cpu_get_pc(cpu, &PC);
+
 
 
 	/*#######################################################################*/
-	mips_mem_free(mem);
-	mips_cpu_reset(cpu);
+	/*mips_mem_free(mem);
+	mem = 0;
+	mem = mips_mem_create_ram(4096);
+	mips_cpu_reset(cpu);*/
 	/*#######################################################################*/
-
-	uint32_t originalPCNEXT;
-
 
 	testId = mips_test_begin_test("BEQ");
 	passed = 0;
@@ -1306,14 +1309,11 @@ int main(){
 	buffer[2] = (instruction >> 8) & 0xFF;
 	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
 
-
-
 	err = mips_cpu_get_pc(cpu, &PC);
-	cout << PC << endl; //PC;
 	err = mips_mem_write(mem, PC, 4, buffer);
 
-	err = mips_cpu_get_pc_next(cpu, &originalPCNEXT);
-	cout << originalPCNEXT<< endl; //PCNEXT
+	err = mips_cpu_get_pc_next(cpu, &PCNext);
+
 
 	err = mips_cpu_set_register(cpu, 16, 3);
 	err = mips_cpu_set_register(cpu, 17, 3);
@@ -1321,14 +1321,42 @@ int main(){
 	err = mips_cpu_step(cpu);
 
 	err = mips_cpu_get_pc(cpu, &PC);
-	cout << PC << endl; //PCNEXT is now PC
-	err = mips_cpu_get_pc_next(cpu, &PC);
-	cout << PC << endl; //PCNEXT + OFFSET SHIFTED 2
 
-	passed = ((originalPCNEXT + 800) == PC);
+	err = mips_cpu_get_pc_next(cpu, &PC);
+
+	passed = ((PCNext + 800) == PC);
 	mips_test_end_test(testId, passed, "Result + 800");
 
 
+	//STEP
+	err = mips_cpu_step(cpu);
+
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("BGEZ");
+	passed = 0;
+
+	instruction = (0b000001 << 26) | (16ul << 21) |  (1ul << 16) | (0xC8 << 0); //branch 800 addresses
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	//cout << "Current PC: " << PC << endl;
+	err = mips_mem_write(mem, PC, 4, buffer);
+	err = mips_cpu_get_pc_next(cpu, &PCNext);
+	//cout << "Next PC: " << PCNext << endl;
+	err = mips_cpu_set_register(cpu, 16, 3);
+
+	err = mips_cpu_step(cpu);
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	//cout << "Current PC after stepping:" << PC << endl;
+	err = mips_cpu_get_pc_next(cpu, &PCNext);
+	//cout << "Next PC: " << PCNext << endl;
+	passed = ((PC + 800) == PCNext);
+	mips_test_end_test(testId, passed, "Result + 800");
 
 	mips_test_end_suite();
 
