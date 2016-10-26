@@ -1358,6 +1358,37 @@ int main(){
 	passed = ((PC + 800) == PCNext);
 	mips_test_end_test(testId, passed, "Result + 800");
 
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("BGEZAL");
+	passed = 0;
+
+	instruction = (0b000001 << 26) | (16ul << 21) |  (17ul << 16) | (0xC8 << 0); //branch 800 addresses
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	//cout << "Current PC: " << PC << endl;
+	uint32_t saveMe = PC;
+	err = mips_mem_write(mem, PC, 4, buffer);
+	err = mips_cpu_get_pc_next(cpu, &PCNext);
+	//cout << "Next PC: " << PCNext << endl;
+	err = mips_cpu_set_register(cpu, 16, 3);
+
+	err = mips_cpu_step(cpu);
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	//cout << "Current PC after stepping:" << PC << endl;
+	err = mips_cpu_get_pc_next(cpu, &PCNext);
+	//cout << "Next PC: " << PCNext << endl;
+	uint32_t LinkReg;
+	err = mips_cpu_get_register(cpu, 31, &LinkReg);
+	//cout << LinkReg << " " << saveMe+8 << endl;
+	passed = (LinkReg == (saveMe+8));
+	mips_test_end_test(testId, passed, "31 contained Address 1020");
+
 	mips_test_end_suite();
 
 
