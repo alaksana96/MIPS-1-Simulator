@@ -32,6 +32,7 @@ mips_error BGEZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state);
 mips_error BGEZAL(uint32_t rs, uint16_t immed, mips_cpu_impl *state);
 
 mips_error BEQ(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
+mips_error BGTZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state);
 mips_error ADDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
 mips_error ADDIU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
 mips_error SLTI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
