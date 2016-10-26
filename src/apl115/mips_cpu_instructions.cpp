@@ -114,6 +114,7 @@ mips_error BLTZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_pc(state, nextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
@@ -125,6 +126,7 @@ mips_error BGEZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_pc(state, nextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
@@ -138,6 +140,7 @@ mips_error BLTZAL(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_register(state, 31, nextNextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
@@ -151,6 +154,7 @@ mips_error BGEZAL(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_register(state, 31, nextNextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
@@ -162,6 +166,7 @@ mips_error BEQ(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_pc(state, nextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
@@ -173,6 +178,7 @@ mips_error BNE(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_pc(state, nextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
@@ -184,6 +190,7 @@ mips_error BLEZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_pc(state, nextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
@@ -195,6 +202,7 @@ mips_error BGTZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 		err = mips_cpu_set_pc(state, nextPC);
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
+	mips_cpu_set_pc_next(state, nextPC+4);
 	return mips_cpu_set_pc(state, nextPC);
 }
 
