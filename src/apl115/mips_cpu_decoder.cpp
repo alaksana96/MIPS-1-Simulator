@@ -152,9 +152,12 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	mips_error err;
 	err = mips_cpu_get_register(state, rs, &srca);
 	err = mips_cpu_get_register(state, rt, &srcb);
+
+
+
 	switch(opcode)
 	{
-	case 6:
+	case 4:
 		//BEQ
 		return BEQ(srca, srcb, immed16, state);
 		break;
@@ -210,6 +213,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 	}
 
+
 	return mips_ErrorNotImplemented;
 
 }
@@ -262,6 +266,11 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 		break;
 
 	}
+	uint32_t currentPC, nextPC;
+	mips_error err = mips_cpu_get_pc(state, &currentPC);
+	err = mips_cpu_set_pc(state, currentPC + 4); //Move to next address
+	err = mips_cpu_get_pc(state, &nextPC);
+	err = mips_cpu_set_pc_next(state, nextPC);
 
 	return mips_ErrorNotImplemented;
 }

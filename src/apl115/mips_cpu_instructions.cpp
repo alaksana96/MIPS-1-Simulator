@@ -6,10 +6,13 @@
  */
 
 #include "mips.h"
+#include "mips_cpu.h"
+#include "mips_cpu_pc_next_instructions.h"
 #include <iostream>
 #include <bitset>
 
 using namespace std;
+
 
 bool isNegative32(uint32_t val){
 	return ((val >> 31) == 1);
@@ -104,12 +107,14 @@ mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 /**************************************************************************************/
 
 mips_error BEQ(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
+	uint32_t currentPC, nextPC;
+	mips_error err = mips_cpu_get_pc(state, &currentPC);
+	err = mips_cpu_get_pc_next(state, &nextPC);
 	if(rs == rt){
-		&state->pc = state->pcNext;
-		&state->pcNext = state->pcNext + (uint32_t)(((int32_t)((int16_t)immed) << 2));
-		return mips_Success;
+		err = mips_cpu_set_pc(state, nextPC);
+		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
-	return mips_cpu_set_pc(state, state->pc);
+	return mips_cpu_set_pc(state, nextPC);
 }
 
 mips_error ADDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){

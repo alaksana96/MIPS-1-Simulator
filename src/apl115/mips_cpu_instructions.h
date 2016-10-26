@@ -7,6 +7,9 @@
 
 #include "mips.h"
 
+mips_error mips_cpu_get_pc_next(mips_cpu_h state, uint32_t *pc);
+mips_error mips_cpu_set_pc_next(mips_cpu_h state, uint32_t pc);
+
 mips_error SLL(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state);
 mips_error SRL(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state);
 mips_error SRA(uint32_t rt, uint32_t rd, uint32_t sa, mips_cpu_impl *state);

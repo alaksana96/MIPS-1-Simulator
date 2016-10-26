@@ -6,6 +6,7 @@
  */
 
 #include "mips.h"
+
 #include "mips_cpu_decoder.h"
 #include "mips_cpu_instructions.h"
 #include <assert.h>
@@ -15,7 +16,7 @@ using namespace std;
 
 struct mips_cpu_impl{
 	uint32_t pc;
-	uint32_t pcNext  = pc+4;
+	uint32_t pcNext;
 	uint32_t regs[32];
 	mips_mem_h mem;
 	unsigned logLevel;
@@ -39,7 +40,7 @@ mips_cpu_h mips_cpu_create(mips_mem_h mem){
 mips_error mips_cpu_reset(mips_cpu_h state){
 
 	state->pc = 0;
-
+	state->pcNext = 4;
 	for(unsigned i = 0; i < 32; i++){
 		state->regs[i] = 0;
 	}
@@ -123,7 +124,6 @@ mips_error mips_cpu_step(
 	mips_error err = mips_cpu_get_pc(state, &pcOrig);
 	pcGot = pcOrig + 4;
 	err = mips_mem_read(state->mem, state->pc, 4,buffer);
-	err = mips_cpu_set_pc(state, pcGot); //Move to next address
 
 	if(err!=mips_Success){
 		mips_cpu_get_pc(state, &pcGot);
@@ -135,7 +135,12 @@ mips_error mips_cpu_step(
 
 	err = decodeInstruction(instr, state->mem, state);
 
+
+
+
 	return mips_Success;
+
+
 
 }
 
@@ -153,10 +158,24 @@ void mips_cpu_free(mips_cpu_h state){
 
 
 
+/****************************************************************************/
 
 
+mips_error mips_cpu_set_pc_next(mips_cpu_h state, uint32_t pc){
+	if(state == 0){
+		return mips_ErrorInvalidHandle;
+	}
+	state->pcNext = pc;
+	return mips_Success;
+}
 
-
+mips_error mips_cpu_get_pc_next(mips_cpu_h state, uint32_t *pc){
+	if(state == 0){
+		return mips_ErrorInvalidHandle;
+	}
+	*pc = state->pcNext;
+	return mips_Success;
+}
 
 
 

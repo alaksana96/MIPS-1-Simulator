@@ -6,6 +6,7 @@
  */
 
 #include "mips.h"
+#include "mips_cpu_pc_next_instructions.h"
 #include <bitset>
 #include <iostream>
 
@@ -295,7 +296,7 @@ int main(){
 	err = mips_cpu_get_pc(cpu, &PC);
 	err = mips_mem_write(mem, PC, 4, buffer);
 
-	err = mips_cpu_set_register(cpu, 4, 100);
+	err = mips_cpu_set_register(cpu, 4, 10);
 	err = mips_cpu_set_register(cpu, 5, 60);
 	err = mips_cpu_set_register(cpu, 3, 6969);
 
@@ -303,7 +304,8 @@ int main(){
 
 	err = mips_cpu_get_register(cpu, 3, &result);
 
-	passed = (result == 100+60);
+
+	passed = (result == 10+60);
 
 	mips_test_end_test(testId, passed, "Result was: 160");
 
@@ -1120,7 +1122,6 @@ int main(){
 
 	result = (uint32_t)temp8;
 
-	cout << result << endl;
 	passed = (result == 0xEE);
 	mips_test_end_test(testId, passed, "Result: 0xEE, was written to 0x000F0003");
 
@@ -1285,6 +1286,48 @@ int main(){
 
 	passed = (result == 400);
 	mips_test_end_test(testId, passed, "Result: 40, was written to 0x000F0005");
+
+
+
+	/*#######################################################################*/
+	mips_mem_free(mem);
+	mips_cpu_reset(cpu);
+	/*#######################################################################*/
+
+	uint32_t originalPCNEXT;
+
+
+	testId = mips_test_begin_test("BEQ");
+	passed = 0;
+
+	instruction = (0b000100 << 26) | (16ul << 21) | (17ul << 16) | (0xC8 << 0); //branch 800 addresses
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	cout << PC << endl; //PC;
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_get_pc_next(cpu, &originalPCNEXT);
+	cout << originalPCNEXT<< endl; //PCNEXT
+
+	err = mips_cpu_set_register(cpu, 16, 3);
+	err = mips_cpu_set_register(cpu, 17, 3);
+
+	err = mips_cpu_step(cpu);
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	cout << PC << endl; //PCNEXT is now PC
+	err = mips_cpu_get_pc_next(cpu, &PC);
+	cout << PC << endl; //PCNEXT + OFFSET SHIFTED 2
+
+	passed = ((originalPCNEXT + 800) == PC);
+	mips_test_end_test(testId, passed, "Result + 800");
+
 
 
 	mips_test_end_suite();
