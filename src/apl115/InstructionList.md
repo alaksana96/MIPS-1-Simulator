@@ -1,57 +1,57 @@
 
 
-Code  |   Meaning                                 | Complexity  | Implemented  | Tested
-------|-------------------------------------------|-------------|--------------|----------
-ADD   |  Add (with overflow)                      | 2  XX       | YES             |
-ADDI  |  Add immediate (with overflow)            | 2  XX       | YES  	|
-ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       | YES |
-ADDU  |  Add unsigned (no overflow)               | 1  X        | YES |
-AND   |  Bitwise and                              | 1  X        | YES |
-ANDI  |  Bitwise and immediate                    | 2  XX       | YES |
-BEQ   |  Branch on equal                          | 3  XXX      | YES | Bit more testing
-BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing
-BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     | YES | Bit more testing
-BGTZ  |  Branch on greater than zero              | 3  XXX      | YES | NEED TO TEST
-BLEZ  |  Branch on less than or equal to zero     | 3  XXX      | YES | NEED TO TEST
-BLTZ  |  Branch on less than zero                 | 3  XXX      | YES | NEED TO TEST
-BLTZAL|  Branch on less than zero and link        | 4  XXXX     | YES | NEED TO TEST
-BNE   |  Branch on not equal                      | 3  XXX      ||
-DIV   |  Divide                                   | 4  XXXX     ||
-DIVU  |  Divide unsigned                          | 4  XXXX     ||
-J     |  Jump                                     | 3  XXX      ||
-JALR  |  Jump and link register                   | 4  XXXX     ||
-JAL   |  Jump and link                            | 4  XXXX     ||
-JR    |  Jump register                            | 3  XXX      |
-LB    |  Load byte                                | 3  XXX      | YES | 
-LBU   |  Load byte unsigned                       | 3  XXX      |
-LH    |  Load half-word                           | 3  XXX      | 
-LHU   |  Load half-word unsigned                  | 3  XXX      | 
-LUI   |  Load upper immediate                     | 2  XX       |
-LW    |  Load word                                | 2  XX       | YES
-LWL   |  Load word left                           | 5  XXXXX    |
-LWR   |  Load word right                          | 5  XXXXX    |
-MFHI  |  Move from HI                             | 3  XXX      |
-MFLO  |  Move from LO                             | 3  XXX      |
-MTHI  |  Move to HI                               | 3  XXX      |
-MTLO  |  Move to LO                               | 3  XXX      |
-MULT  |  Multiply                                 | 4  XXXX     |
-MULTU |  Multiply unsigned                        | 4  XXXX     |
-OR    |  Bitwise or                               | 1  X        | YES
-ORI   |  Bitwise or immediate                     | 2  XX       | YES
-SB    |  Store byte                               | 3  XXX      | YES | Checked for all except +4 but im sure it works
-SH    |  Store half-word                          | 3  XXX      | YES | Need to check for unaligned
-SLL   |  Shift left logical                       | 2  XX       | YES
-SLLV  |  Shift left logical variable              | 3  XXX      | YES
-SLT   |  Set on less than (signed)                | 2  XX       | YES
-SLTI  |  Set on less than immediate (signed)      | 3  XXX      | YES
-SLTIU |  Set on less than immediate unsigned      | 3  XXX      | YES
-SLTU  |  Set on less than unsigned                | 1  X        | YES
-SRA   |  Shift right arithmetic                   | 2  XX       | YES
-SRAV  |  Shift right arithmetic                   | 2  XX       | YES
-SRL   |  Shift right logical                      | 2  XX       | YES
-SRLV  |  Shift right logical variable             | 3  XXX      | YES
-SUB   |  Subtract                                 | 2  XX       | YES
-SUBU  |  Subtract unsigned                        | 1  X        | YES
-SW    |  Store word                               | 2  XX       | YES
-XOR   |  Bitwise exclusive or                     | 1  X        | YES
-XORI  |  Bitwise exclusive or immediate           | 2  XX       | YES
+No.|Code  |   Meaning                                 | Complexity  | Implemented  | Tested
+---|------|-------------------------------------------|-------------|--------------|----------
+1|ADD   |  Add (with overflow)                      | 2  XX       | YES             |
+2|ADDI  |  Add immediate (with overflow)            | 2  XX       | YES  	|
+3|ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       | YES |
+4|ADDU  |  Add unsigned (no overflow)               | 1  X        | YES |
+5|AND   |  Bitwise and                              | 1  X        | YES |
+6|ANDI  |  Bitwise and immediate                    | 2  XX       | YES |
+7|BEQ   |  Branch on equal                          | 3  XXX      | YES | Bit more testing
+8|BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing
+9|BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     | YES | Bit more testing
+10|BGTZ  |  Branch on greater than zero              | 3  XXX      | YES | NEED TO TEST
+11|BLEZ  |  Branch on less than or equal to zero     | 3  XXX      | YES | NEED TO TEST
+12|BLTZ  |  Branch on less than zero                 | 3  XXX      | YES | NEED TO TEST
+13|BLTZAL|  Branch on less than zero and link        | 4  XXXX     | YES | NEED TO TEST
+14|BNE   |  Branch on not equal                      | 3  XXX      | YES | NEED TO TEST
+15|DIV   |  Divide                                   | 4  XXXX     |     |
+16|DIVU  |  Divide unsigned                          | 4  XXXX     |     |
+17|J     |  Jump                                     | 3  XXX      |     |
+18|JALR  |  Jump and link register                   | 4  XXXX     |     |
+19|JAL   |  Jump and link                            | 4  XXXX     |     |
+20|JR    |  Jump register                            | 3  XXX      |     |
+21|LB    |  Load byte                                | 3  XXX      | YES | 
+22|LBU   |  Load byte unsigned                       | 3  XXX      |     |
+23|LH    |  Load half-word                           | 3  XXX      |     |
+24|LHU   |  Load half-word unsigned                  | 3  XXX      |     |
+25|LUI   |  Load upper immediate                     | 2  XX       |     |
+26|LW    |  Load word                                | 2  XX       | YES
+27|LWL   |  Load word left                           | 5  XXXXX    |
+28|LWR   |  Load word right                          | 5  XXXXX    |
+29|MFHI  |  Move from HI                             | 3  XXX      |
+30|MFLO  |  Move from LO                             | 3  XXX      |
+31|MTHI  |  Move to HI                               | 3  XXX      |
+32|MTLO  |  Move to LO                               | 3  XXX      |
+33|MULT  |  Multiply                                 | 4  XXXX     |
+34|MULTU |  Multiply unsigned                        | 4  XXXX     |
+35|OR    |  Bitwise or                               | 1  X        | YES
+36|ORI   |  Bitwise or immediate                     | 2  XX       | YES
+37|SB    |  Store byte                               | 3  XXX      | YES | Checked for all except +4 but im sure it works
+38|SH    |  Store half-word                          | 3  XXX      | YES | Need to check for unaligned
+39|SLL   |  Shift left logical                       | 2  XX       | YES
+40|SLLV  |  Shift left logical variable              | 3  XXX      | YES
+41|SLT   |  Set on less than (signed)                | 2  XX       | YES
+42|SLTI  |  Set on less than immediate (signed)      | 3  XXX      | YES
+43|SLTIU |  Set on less than immediate unsigned      | 3  XXX      | YES
+44|SLTU  |  Set on less than unsigned                | 1  X        | YES
+45|SRA   |  Shift right arithmetic                   | 2  XX       | YES
+46|SRAV  |  Shift right arithmetic                   | 2  XX       | YES
+47|SRL   |  Shift right logical                      | 2  XX       | YES
+48|SRLV  |  Shift right logical variable             | 3  XXX      | YES
+49|SUB   |  Subtract                                 | 2  XX       | YES
+50|SUBU  |  Subtract unsigned                        | 1  X        | YES
+51|SW    |  Store word                               | 2  XX       | YES
+52|XOR   |  Bitwise exclusive or                     | 1  X        | YES
+53|XORI  |  Bitwise exclusive or immediate           | 2  XX       | YES

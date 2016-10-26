@@ -183,12 +183,15 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 		}
 
-
 		break;
 
 	case 4:
 		//BEQ
 		return BEQ(srca, srcb, immed16, state);
+		break;
+	case 5:
+		//BNE
+		return BNE(srca, srcb, immed16, state);
 		break;
 	case 6:
 		//BLEZ
@@ -315,7 +318,7 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	err = mips_cpu_get_pc(state, &checkPC);
 	err = mips_cpu_get_pc_next(state, &checkPCNext);
 
-	if(opcode != 1 && opcode != 4 && opcode != 6 && opcode != 7){
+	if(opcode != 1 && opcode != 4 && opcode != 5 && opcode != 6 && opcode != 7){
 	err = mips_cpu_set_pc(state, originalPCNext);
 	err = mips_cpu_set_pc_next(state, originalPCNext+4);
 	}
