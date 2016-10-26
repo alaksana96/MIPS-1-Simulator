@@ -172,10 +172,15 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			//BGEZ
 			return BGEZ(rs, immed, state);
 			break;
+		case 16:
+			//BLTZAL
+			return BLTZAL(rs, immed, state);
+			break;
 		case 17:
 			//BGEZAL
 			return BGEZAL(rs, immed, state);
 			break;
+
 		}
 
 

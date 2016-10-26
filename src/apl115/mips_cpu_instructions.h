@@ -30,6 +30,7 @@ mips_error SLTU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state);
 /**********************************************************************************/
 mips_error BLTZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state);
 mips_error BGEZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state);
+mips_error BLTZAL(uint32_t rs, uint16_t immed, mips_cpu_impl *state);
 mips_error BGEZAL(uint32_t rs, uint16_t immed, mips_cpu_impl *state);
 
 mips_error BEQ(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state);
