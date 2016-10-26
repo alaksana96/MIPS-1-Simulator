@@ -12,7 +12,7 @@ BEQ   |  Branch on equal                          | 3  XXX      | YES | Bit more
 BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing
 BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     | YES | Bit more testing
 BGTZ  |  Branch on greater than zero              | 3  XXX      | YES | NEED TO TEST
-BLEZ  |  Branch on less than or equal to zero     | 3  XXX      ||
+BLEZ  |  Branch on less than or equal to zero     | 3  XXX      | YES | NEED TO TEST
 BLTZ  |  Branch on less than zero                 | 3  XXX      ||
 BLTZAL|  Branch on less than zero and link        | 4  XXXX     ||
 BNE   |  Branch on not equal                      | 3  XXX      ||
