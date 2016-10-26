@@ -28,6 +28,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	err = mips_cpu_get_register(state, rs, &srca);
 	err = mips_cpu_get_register(state, rt, &srcb);
 
+
 	switch(func)
 	{
 		case 0:
@@ -133,6 +134,9 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 	}
 
+
+
+
 	return mips_ErrorNotImplemented;
 
 }
@@ -152,7 +156,6 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	mips_error err;
 	err = mips_cpu_get_register(state, rs, &srca);
 	err = mips_cpu_get_register(state, rt, &srcb);
-
 
 
 	switch(opcode)
@@ -244,6 +247,7 @@ mips_error decodeJInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* state){
 
 	uint32_t opcode;
+	mips_error err;
 
 	opcode = instr >> 26;
 
@@ -251,6 +255,10 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	{
 	case 0:
 		decodeRInstruction(instr, mem, state);
+		uint32_t currentPC, nextPC;
+		err = mips_cpu_get_pc(state, &currentPC);
+		err = mips_cpu_set_pc(state, nextPC); //Move to next address
+		err = mips_cpu_set_pc_next(state, nextPC + 4);
 		break;
 
 	case 2: //J
@@ -262,15 +270,18 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 		break;
 
 	default :
+		if(opcode != 4){
+			uint32_t currentPC, nextPC;
+			err = mips_cpu_get_pc(state, &currentPC);
+			err = mips_cpu_set_pc(state, nextPC); //Move to next address
+			err = mips_cpu_set_pc_next(state, nextPC + 4);
+		}
+
 		decodeIInstruction(instr, mem, state);
 		break;
 
 	}
-	uint32_t currentPC, nextPC;
-	mips_error err = mips_cpu_get_pc(state, &currentPC);
-	err = mips_cpu_set_pc(state, currentPC + 4); //Move to next address
-	err = mips_cpu_get_pc(state, &nextPC);
-	err = mips_cpu_set_pc_next(state, nextPC);
+
 
 	return mips_ErrorNotImplemented;
 }
