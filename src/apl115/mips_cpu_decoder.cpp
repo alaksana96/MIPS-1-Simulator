@@ -164,6 +164,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 		switch(rt)
 		{
+		case 0:
+			//BLTZ
+			return BLTZ(rs, immed, state);
+			break;
 		case 1:
 			//BGEZ
 			return BGEZ(rs, immed, state);
@@ -306,7 +310,7 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	err = mips_cpu_get_pc(state, &checkPC);
 	err = mips_cpu_get_pc_next(state, &checkPCNext);
 
-	if(opcode != 4 && opcode != 1 && opcode != 7){
+	if(opcode != 1 && opcode != 4 && opcode != 6 && opcode != 7){
 	err = mips_cpu_set_pc(state, originalPCNext);
 	err = mips_cpu_set_pc_next(state, originalPCNext+4);
 	}
