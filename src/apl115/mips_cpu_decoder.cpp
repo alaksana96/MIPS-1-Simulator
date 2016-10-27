@@ -31,107 +31,107 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 	switch(func)
 	{
-		case 0:
-			//SLL
-			return SLL(srcb, rd, shift, state);
-			break;
+	case 0:
+		//SLL
+		return SLL(srcb, rd, shift, state);
+		break;
 
-		case 2:
-			//SRL
-			return SRL(srcb, rd, shift, state);
-			break;
-		case 3:
-			//SRA
-			return SRA(srcb, rd, shift, state);
-			break;
-		case 4:
-			//SLLV
-			return SLLV(srca, srcb, rd, state);
-			break;
-		case 6:
-			//SRLV
-			return SRLV(srca, srcb, rd, state);
-			break;
-		case 7:
-			//SRAV
-			return SRAV(srca, srcb, rd, state);
-			break;
-		case 8:
-			//JR
-			break;
-		case 9:
-			//JALR
-			break;
-		case 12:
-			//SYSCALL
-			break;
-		case 13:
-			//Break
-			break;
-		case 16:
-			//MFHI
-			break;
-		case 17:
-			//MTHI
-			break;
-		case 18:
-			//MFLO
-			break;
-		case 19:
-			//MTLO
-			break;
-		case 24:
-			//MULT
-			break;
-		case 25:
-			//MULTU
-			break;
-		case 26:
-			//DIV
-			break;
-		case 27:
-			//DIVU
-			break;
-		case 32:
-			//ADD
-			return ADD(srca, srcb, rd, state);
-			break;
-		case 33:
-			//ADDU
-			return ADDU(srca, srcb, rd, state);
-			break;
-		case 34:
-			//SUB
-			return SUB(srca, srcb, rd, state);
-			break;
-		case 35:
-			//SUBU
-			return SUBU(srca, srcb, rd, state);
-			break;
-		case 36:
-			//AND
-			return AND(srca, srcb, rd, state);
-			break;
-		case 37:
-			//OR
-			return OR(srca, srcb, rd, state);
-			break;
-		case 38:
-			//XOR
-			return XOR(srca, srcb, rd, state);
-			break;
-		case 39:
-			//NOR NOT IN DT SPEC
-			return NOR(srca, srcb, rd, state);
-			break;
-		case 42:
-			//SLT
-			return SLT(srca, srcb, rd, state);
-			break;
-		case 43:
-			//SLTU
-			return SLTU(srca, srcb, rd, state);
-			break;
+	case 2:
+		//SRL
+		return SRL(srcb, rd, shift, state);
+		break;
+	case 3:
+		//SRA
+		return SRA(srcb, rd, shift, state);
+		break;
+	case 4:
+		//SLLV
+		return SLLV(srca, srcb, rd, state);
+		break;
+	case 6:
+		//SRLV
+		return SRLV(srca, srcb, rd, state);
+		break;
+	case 7:
+		//SRAV
+		return SRAV(srca, srcb, rd, state);
+		break;
+	case 8:
+		//JR
+		break;
+	case 9:
+		//JALR
+		break;
+	case 12:
+		//SYSCALL
+		break;
+	case 13:
+		//Break
+		break;
+	case 16:
+		//MFHI
+		break;
+	case 17:
+		//MTHI
+		break;
+	case 18:
+		//MFLO
+		break;
+	case 19:
+		//MTLO
+		break;
+	case 24:
+		//MULT
+		break;
+	case 25:
+		//MULTU
+		break;
+	case 26:
+		//DIV
+		break;
+	case 27:
+		//DIVU
+		break;
+	case 32:
+		//ADD
+		return ADD(srca, srcb, rd, state);
+		break;
+	case 33:
+		//ADDU
+		return ADDU(srca, srcb, rd, state);
+		break;
+	case 34:
+		//SUB
+		return SUB(srca, srcb, rd, state);
+		break;
+	case 35:
+		//SUBU
+		return SUBU(srca, srcb, rd, state);
+		break;
+	case 36:
+		//AND
+		return AND(srca, srcb, rd, state);
+		break;
+	case 37:
+		//OR
+		return OR(srca, srcb, rd, state);
+		break;
+	case 38:
+		//XOR
+		return XOR(srca, srcb, rd, state);
+		break;
+	case 39:
+		//NOR NOT IN DT SPEC
+		return NOR(srca, srcb, rd, state);
+		break;
+	case 42:
+		//SLT
+		return SLT(srca, srcb, rd, state);
+		break;
+	case 43:
+		//SLTU
+		return SLTU(srca, srcb, rd, state);
+		break;
 	}
 
 
@@ -185,83 +185,87 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 		break;
 
-	case 4:
-		//BEQ
-		return BEQ(srca, srcb, immed16, state);
-		break;
-	case 5:
-		//BNE
-		return BNE(srca, srcb, immed16, state);
-		break;
-	case 6:
-		//BLEZ
-		return BLEZ(rs, immed16, state);
-		break;
-	case 7:
-		//BGTZ
-		return BGTZ(rs, immed16, state);
-		break;
-	case 8:
-		//ADDI
-		return ADDI(srca, rt, immed16, state);
-		break;
-	case 9:
-		//ADDIU
-		return ADDIU(srca, rt, immed16, state);
-		break;
-	case 10:
-		//SLTI
-		return SLTI(srca, rt, immed16, state);
-		break;
+		case 4:
+			//BEQ
+			return BEQ(srca, srcb, immed16, state);
+			break;
+		case 5:
+			//BNE
+			return BNE(srca, srcb, immed16, state);
+			break;
+		case 6:
+			//BLEZ
+			return BLEZ(rs, immed16, state);
+			break;
+		case 7:
+			//BGTZ
+			return BGTZ(rs, immed16, state);
+			break;
+		case 8:
+			//ADDI
+			return ADDI(srca, rt, immed16, state);
+			break;
+		case 9:
+			//ADDIU
+			return ADDIU(srca, rt, immed16, state);
+			break;
+		case 10:
+			//SLTI
+			return SLTI(srca, rt, immed16, state);
+			break;
 
-	case 11:
-		//SLTIU
-		return SLTIU(srca, rt, immed16, state);
-		break;
-	case 12:
-		//ANDI
-		return ANDI(srca, rt, immed16, state);
-		break;
-	case 13:
-		//ORI
-		return ORI(srca, rt, immed16, state);
-		break;
-	case 14:
-		//XORI
-		return XORI(srca, rt, immed16, state);
-		break;
-	case 32:
-		//LB
-		return LB(srca, rt, immed16, state, mem);
-		break;
-	case 33:
-		//LH
-		return LH(srca, rt, immed16, state, mem);
-		break;
-	case 35:
-		//LW
-		return LW(srca, rt, immed16, state, mem);
-		break;
-	case 36:
-		//LBU
-		return LBU(srca, rt, immed16, state, mem);
-		break;
-	case 37:
-		//LHU
-		return LHU(srca, rt, immed16, state, mem);
-		break;
-	case 40:
-		//SB
-		return SB(srca, srcb, immed16, state, mem);
-		break;
-	case 41:
-		//SH
-		return SH(srca, srcb, immed16, state, mem);
-		break;
-	case 43:
-		//SW
-		return SW(srca, srcb, immed16, state, mem);
-		break;
+		case 11:
+			//SLTIU
+			return SLTIU(srca, rt, immed16, state);
+			break;
+		case 12:
+			//ANDI
+			return ANDI(srca, rt, immed16, state);
+			break;
+		case 13:
+			//ORI
+			return ORI(srca, rt, immed16, state);
+			break;
+		case 14:
+			//XORI
+			return XORI(srca, rt, immed16, state);
+			break;
+		case 15:
+			//LUI
+			return LUI(rt, immed16, state);
+			break;
+		case 32:
+			//LB
+			return LB(srca, rt, immed16, state, mem);
+			break;
+		case 33:
+			//LH
+			return LH(srca, rt, immed16, state, mem);
+			break;
+		case 35:
+			//LW
+			return LW(srca, rt, immed16, state, mem);
+			break;
+		case 36:
+			//LBU
+			return LBU(srca, rt, immed16, state, mem);
+			break;
+		case 37:
+			//LHU
+			return LHU(srca, rt, immed16, state, mem);
+			break;
+		case 40:
+			//SB
+			return SB(srca, srcb, immed16, state, mem);
+			break;
+		case 41:
+			//SH
+			return SH(srca, srcb, immed16, state, mem);
+			break;
+		case 43:
+			//SW
+			return SW(srca, srcb, immed16, state, mem);
+			break;
 
 	}
 
@@ -331,8 +335,8 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	err = mips_cpu_get_pc_next(state, &checkPCNext);
 
 	if(opcode != 1 && opcode != 4 && opcode != 5 && opcode != 6 && opcode != 7){
-	err = mips_cpu_set_pc(state, originalPCNext);
-	err = mips_cpu_set_pc_next(state, originalPCNext+4);
+		err = mips_cpu_set_pc(state, originalPCNext);
+		err = mips_cpu_set_pc_next(state, originalPCNext+4);
 	}
 
 	return mips_ErrorNotImplemented;

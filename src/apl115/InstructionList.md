@@ -26,7 +26,7 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 22|LBU   |  Load byte unsigned                       | 3  XXX      | YES    | 
 23|LH    |  Load half-word                           | 3  XXX      | YES    | Test for Sign extend
 24|LHU   |  Load half-word unsigned                  | 3  XXX      | YES    | Test for 0 extend
-25|LUI   |  Load upper immediate                     | 2  XX       |     |
+25|LUI   |  Load upper immediate                     | 2  XX       | YES    |
 26|LW    |  Load word                                | 2  XX       | YES
 27|LWL   |  Load word left                           | 5  XXXXX    |
 28|LWR   |  Load word right                          | 5  XXXXX    |

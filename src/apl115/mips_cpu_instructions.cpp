@@ -54,8 +54,8 @@ mips_error SRAV(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 
 mips_error ADD(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	if(((!isNegative32(rs) && !isNegative32(rt)) && isNegative32((uint32_t)((int32_t)rs + (int32_t)rt)))
-		||
-	((isNegative32(rs) && isNegative32(rt)) && !isNegative32((uint32_t)((int32_t)rs + (int32_t)rt)))){
+			||
+			((isNegative32(rs) && isNegative32(rt)) && !isNegative32((uint32_t)((int32_t)rs + (int32_t)rt)))){
 		return mips_ExceptionArithmeticOverflow;
 	}
 	return mips_cpu_set_register(state, rd, (uint32_t)((int32_t)rs + (int32_t)rt));
@@ -67,8 +67,8 @@ mips_error ADDU(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 
 mips_error SUB(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	if(((!isNegative32(rs) && isNegative32(rt)) && isNegative32((uint32_t)((int32_t)rs - (int32_t)rt)))
-		||
-	((isNegative32(rs) && !isNegative32(rt)) && !isNegative32((uint32_t)((int32_t)rs - (int32_t)rt)))){
+			||
+			((isNegative32(rs) && !isNegative32(rt)) && !isNegative32((uint32_t)((int32_t)rs - (int32_t)rt)))){
 		return mips_ExceptionArithmeticOverflow;
 	}
 	return mips_cpu_set_register(state, rd, (uint32_t)((int32_t)rs - (int32_t)rt));
@@ -208,8 +208,8 @@ mips_error BGTZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 mips_error ADDI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	int16_t immedSign = (int16_t)immed;
 	if(((!isNegative32(rs) && !isNegative16(immed)) && isNegative32((uint32_t)((int32_t)rs + (int32_t)immedSign)))
-		||
-	((isNegative32(rs) && isNegative16(immed)) && !isNegative32((uint32_t)((int32_t)rs + (int32_t)immedSign)))){
+			||
+			((isNegative32(rs) && isNegative16(immed)) && !isNegative32((uint32_t)((int32_t)rs + (int32_t)immedSign)))){
 		return mips_ExceptionArithmeticOverflow;
 	}
 	return mips_cpu_set_register(state, rt, (uint32_t)((int32_t)rs + (int32_t)immedSign));
@@ -238,6 +238,10 @@ mips_error ORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 
 mips_error XORI(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rt, (rs ^ ((uint32_t)immed)));
+}
+
+mips_error LUI(uint32_t rt, uint16_t immed, mips_cpu_impl *state){
+	return mips_cpu_set_register(state, rt, (((uint32_t)immed) << 16) & 0xFFFF0000);
 }
 
 mips_error LB(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
