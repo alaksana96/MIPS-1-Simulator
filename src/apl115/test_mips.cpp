@@ -1524,6 +1524,30 @@ int main(){
 	passed = (result == 0); //not 10
 	mips_test_end_test(testId, passed, "MFHI reg value = 0, moved to reg 15");
 
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("MFLO");
+	passed = 0;
+
+	instruction = (0ul << 26) | (0ul << 21) | (0ul << 16) | (16ul << 11) | (0ul << 6) | (0b010010 << 0);
+
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	mips_cpu_get_pc(newCPU, &PC);
+	mips_mem_write(newMem, PC, 4, buffer);
+
+	mips_cpu_set_register(newCPU, 16, 30); //We want to move the MFHI value to register 16, should be 0;
+
+	mips_cpu_step(newCPU);
+
+	mips_cpu_get_register(newCPU, 16, &result);
+
+	passed = (result == 0); //not 30
+	mips_test_end_test(testId, passed, "MFLO reg value = 0, moved to reg 16");
+
 	mips_test_end_suite();
 
 

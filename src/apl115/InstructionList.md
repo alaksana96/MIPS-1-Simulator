@@ -31,7 +31,7 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 27|LWL   |  Load word left                           | 5  XXXXX    |
 28|LWR   |  Load word right                          | 5  XXXXX    |
 29|MFHI  |  Move from HI                             | 3  XXX      | YES
-30|MFLO  |  Move from LO                             | 3  XXX      |
+30|MFLO  |  Move from LO                             | 3  XXX      | YES
 31|MTHI  |  Move to HI                               | 3  XXX      |
 32|MTLO  |  Move to LO                               | 3  XXX      |
 33|MULT  |  Multiply                                 | 4  XXXX     |

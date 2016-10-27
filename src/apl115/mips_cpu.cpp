@@ -190,6 +190,9 @@ mips_error MFHI(uint32_t rd, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, state->regHi);
 }
 
+mips_error MFLO(uint32_t rd, mips_cpu_impl *state){
+	return mips_cpu_set_register(state, rd, state->regLo);
+}
 
 
 
