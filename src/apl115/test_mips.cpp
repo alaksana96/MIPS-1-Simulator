@@ -248,7 +248,20 @@ int main(){
 	mips_cpu_step(cpu);
 	err = mips_cpu_get_register(cpu, 12, &result);
 	passed = (result == (0xAA00));
-	mips_test_end_test(testId, passed, "Answer = ");
+	mips_test_end_test(testId, passed, "Answer = 0xAA00");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("ANDI");
+
+	instr = 0x3062AAAA; //andi r2 r3 0xaaaa
+	setupTestI(cpu, mem, instr, 0xFFFF, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 2, &result);
+	passed = (result == (0xAAAA));
+	mips_test_end_test(testId, passed, "Answer = 0xAAAA");
 
 	mips_test_end_suite();
 

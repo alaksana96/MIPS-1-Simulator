@@ -7,7 +7,7 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 3|ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       | YES |	| YES
 4|ADDU  |  Add unsigned (no overflow)               | 1  X        | YES | | YES
 5|AND   |  Bitwise and                              | 1  X        | YES | | YES
-6|ANDI  |  Bitwise and immediate                    | 2  XX       | YES |
+6|ANDI  |  Bitwise and immediate                    | 2  XX       | YES | | YES
 7|BEQ   |  Branch on equal                          | 3  XXX      | YES | Bit more testing
 8|BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing
 9|BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     | YES | Bit more testing

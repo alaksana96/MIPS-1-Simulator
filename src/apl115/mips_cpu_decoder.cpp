@@ -245,6 +245,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 12:
 			//ANDI
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "ANDI.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
 			return ANDI(srca, rt, immed16, state);
 			break;
 		case 13:
