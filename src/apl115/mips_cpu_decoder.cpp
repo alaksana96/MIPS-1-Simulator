@@ -99,6 +99,10 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 32:
 		//ADD
+		if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "ADD.\n");
+				fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
+			}
 		return ADD(srca, srcb, rd, state);
 		break;
 	case 33:

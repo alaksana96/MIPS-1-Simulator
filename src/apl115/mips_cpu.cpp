@@ -200,6 +200,10 @@ mips_error mips_cpu_get_pc_next(mips_cpu_h state, uint32_t *pc){
 	return mips_Success;
 }
 
+int mips_cpu_get_debug_level(mips_cpu_h state){
+	return state->logLevel;
+}
+
 mips_error MFHI(uint32_t rd, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, state->regHi);
 }

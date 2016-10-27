@@ -10,6 +10,7 @@
 
 mips_error mips_cpu_set_pc_next(mips_cpu_h state, uint32_t pc);
 mips_error mips_cpu_get_pc_next(mips_cpu_h state, uint32_t *pc);
+int mips_cpu_get_debug_level(mips_cpu_h state);
 mips_error MFHI(uint32_t rd, mips_cpu_impl *state);
 mips_error MTHI(uint32_t rs, mips_cpu_impl *state);
 mips_error MFLO(uint32_t rd, mips_cpu_impl *state);

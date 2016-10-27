@@ -1,8 +1,8 @@
 
 
-No.|Code  |   Meaning                                 | Complexity  | Implemented  | Tested
----|------|-------------------------------------------|-------------|--------------|----------
-1|ADD   |  Add (with overflow)                      | 2  XX       | YES             |
+No.|Code  |   Meaning                                 | Complexity  | Implemented  | Tested   | New Test
+---|------|-------------------------------------------|-------------|--------------|----------|----------
+1|ADD   |  Add (with overflow)                      | 2  XX       | YES             |         | 
 2|ADDI  |  Add immediate (with overflow)            | 2  XX       | YES  	|
 3|ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       | YES |
 4|ADDU  |  Add unsigned (no overflow)               | 1  X        | YES |
