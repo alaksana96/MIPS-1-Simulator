@@ -155,12 +155,12 @@ mips_error mips_cpu_step(
 	state->n  = instr; //current instruction
 
 	err = decodeInstruction(instr, state->mem, state);
-	/*
+/*
 	cout << "---------" << endl;
 	cout << bitset<32>(state->n2) << endl;
 	cout << bitset<32>(state->n1) << endl;
 	cout << bitset<32>(state->n) << endl;
-	*/
+*/
 	return mips_Success;
 
 
@@ -208,9 +208,23 @@ mips_error MFLO(uint32_t rd, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, state->regLo);
 }
 
-mips_error MTHI(uint32_t rs, uint32_t func, mips_cpu_impl *state){
-	if((((state->n2) & 0x3F) != func) && (((state->n1) & 0x3F) != func)){
+mips_error MTHI(uint32_t rs, mips_cpu_impl *state){
+	if((((state->n2) & 0x3F) == 0b010000)){
+		return mips_Success;
+	}else if((((state->n1) & 0x3F) == 0b010000)){
+		return mips_Success;
+	} else {
 		state->regHi = rs;
+		return mips_Success;
+	}
+	//undefined
+	return mips_Success;
+
+}
+
+mips_error MTLO(uint32_t rs, mips_cpu_impl *state){
+	if((((state->n2) & 0x3F) != 0b010010) && (((state->n1) & 0x3F) != 0b010010)){
+		state->regLo = rs;
 		return mips_Success;
 	}
 	//undefined

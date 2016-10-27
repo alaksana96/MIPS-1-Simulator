@@ -74,7 +74,8 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 17:
 		//MTHI
-		return MTHI(srca, func, state);
+
+		return MTHI(srca, state);
 		break;
 	case 18:
 		//MFLO
@@ -82,6 +83,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 19:
 		//MTLO
+		return MTLO(rd, state);
 		break;
 	case 24:
 		//MULT

@@ -1502,9 +1502,31 @@ int main(){
 	mips_mem_h newMem = mips_mem_create_ram(4096);
 	mips_cpu_h newCPU = mips_cpu_create(newMem);
 
-	testId = mips_test_begin_test("MFHI");
+	/*#######################################################################*/
+
+	mips_cpu_reset(newCPU);
+
+	testId = mips_test_begin_test("MTHI");
 	passed = 0;
 
+	instruction = (0ul << 26) | (20ul << 21) | (0ul << 16) | (0ul << 11) | (0ul << 6) | (0b010001 << 0);
+
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	mips_cpu_get_pc(newCPU, &PC);
+	mips_mem_write(newMem, PC, 4, buffer);
+
+	mips_cpu_set_register(newCPU, 20, 100); //Set the value to 100, we will move to HI
+
+	mips_cpu_step(newCPU);
+
+	//Read the value in the HI reg
+
+
+	//MFHI instruction
 	instruction = (0ul << 26) | (0ul << 21) | (0ul << 16) | (15ul << 11) | (0ul << 6) | (0b010000 << 0);
 
 	buffer[0] = (instruction >> 24) & 0xFF;
@@ -1515,14 +1537,20 @@ int main(){
 	mips_cpu_get_pc(newCPU, &PC);
 	mips_mem_write(newMem, PC, 4, buffer);
 
-	mips_cpu_set_register(newCPU, 15, 10); //We want to move the MFHI value to register 15, should be 0;
-
-	mips_cpu_step(newCPU);
+	mips_cpu_step(newCPU); //Run the MFHI;
 
 	mips_cpu_get_register(newCPU, 15, &result);
 
-	passed = (result == 0); //not 10
-	mips_test_end_test(testId, passed, "MFHI reg value = 0, moved to reg 15");
+	cout << result << endl;
+	passed = (result == 100);
+	mips_test_end_test(testId, passed, "MTHI reg value = 100");
+
+/*	uint32_t testId2 = mips_test_begin_test("MFHI");
+	uint32_t passed2 = 0;
+
+
+	mips_test_end_test(testId2, passed2, "Read the value from Hi to reg 15");
+*/
 
 	/*#######################################################################*/
 
@@ -1549,87 +1577,7 @@ int main(){
 	mips_test_end_test(testId, passed, "MFLO reg value = 0, moved to reg 16");
 
 	/*#######################################################################*/
-	mips_cpu_set_pc(newCPU, 40); //Move away so no clashes
-
-	testId = mips_test_begin_test("MTHI");
-	passed = 0;
-
-	instruction = (0ul << 26) | (20ul << 21) | (0ul << 16) | (0ul << 11) | (0ul << 6) | (0b010001 << 0);
-
-	buffer[0] = (instruction >> 24) & 0xFF;
-	buffer[1] = (instruction >> 16) & 0xFF;
-	buffer[2] = (instruction >> 8) & 0xFF;
-	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
-
-	mips_cpu_get_pc(newCPU, &PC);
-	mips_mem_write(newMem, PC, 4, buffer);
-
-	mips_cpu_set_register(newCPU, 20, 100); //Set the value to 100, we will move to HI
-
-	mips_cpu_step(newCPU);
-
-	//Read the value in the HI reg
-
-	//MFHI instruction
-	instruction = (0ul << 26) | (0ul << 21) | (0ul << 16) | (15ul << 11) | (0ul << 6) | (0b010000 << 0);
-
-	buffer[0] = (instruction >> 24) & 0xFF;
-	buffer[1] = (instruction >> 16) & 0xFF;
-	buffer[2] = (instruction >> 8) & 0xFF;
-	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
-
-	mips_cpu_get_pc(newCPU, &PC);
-	mips_mem_write(newMem, PC, 4, buffer);
-
-	mips_cpu_step(newCPU); //Run the MFHI;
-
-	mips_cpu_get_register(newCPU, 15, &result);
-
-	passed = (result == 100);
-	mips_test_end_test(testId, passed, "MTHI reg value = 100, moved to reg 15 to check");
-
-	//There is a MFHI instruction previously, so the next MTHI should not work;
-
-	testId = mips_test_begin_test("MTHI");
-	passed = 0;
-
-	instruction = (0ul << 26) | (20ul << 21) | (0ul << 16) | (0ul << 11) | (0ul << 6) | (0b010001 << 0);
-
-	buffer[0] = (instruction >> 24) & 0xFF;
-	buffer[1] = (instruction >> 16) & 0xFF;
-	buffer[2] = (instruction >> 8) & 0xFF;
-	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
-
-	mips_cpu_get_pc(newCPU, &PC);
-	mips_mem_write(newMem, PC, 4, buffer);
-
-	mips_cpu_set_register(newCPU, 20, 69420);
-
-	mips_cpu_step(newCPU);
-
-	//Read the value in the HI reg
-
-	//MFHI instruction
-	instruction = (0ul << 26) | (0ul << 21) | (0ul << 16) | (15ul << 11) | (0ul << 6) | (0b010000 << 0);
-
-	buffer[0] = (instruction >> 24) & 0xFF;
-	buffer[1] = (instruction >> 16) & 0xFF;
-	buffer[2] = (instruction >> 8) & 0xFF;
-	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
-
-	mips_cpu_get_pc(newCPU, &PC);
-	mips_mem_write(newMem, PC, 4, buffer);
-
-	mips_cpu_step(newCPU); //Run the MFHI;
-
-	mips_cpu_get_register(newCPU, 15, &result);
-
-	passed = (result != 69420);
-	mips_test_end_test(testId, passed, "MFHI before, no change");
-
-
-	mips_test_end_suite();
-
+	mips_cpu_set_pc(newCPU, 40);
 
 
 	return 0;
