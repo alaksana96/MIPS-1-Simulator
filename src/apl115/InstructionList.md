@@ -23,7 +23,7 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 19|JAL   |  Jump and link                            | 4  XXXX     |     |
 20|JR    |  Jump register                            | 3  XXX      |     |
 21|LB    |  Load byte                                | 3  XXX      | YES | 
-22|LBU   |  Load byte unsigned                       | 3  XXX      |     |
+22|LBU   |  Load byte unsigned                       | 3  XXX      | YES    |
 23|LH    |  Load half-word                           | 3  XXX      |     |
 24|LHU   |  Load half-word unsigned                  | 3  XXX      |     |
 25|LUI   |  Load upper immediate                     | 2  XX       |     |
