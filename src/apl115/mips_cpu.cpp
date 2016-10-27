@@ -20,6 +20,8 @@ struct mips_cpu_impl{
 	uint32_t pcNext;
 	uint32_t regs[32];
 	mips_mem_h mem;
+	uint32_t regHi;
+	uint32_t regLo;
 	unsigned logLevel;
 	FILE *logFile;
 };
@@ -34,6 +36,9 @@ mips_cpu_h mips_cpu_create(mips_mem_h mem){
 		state->regs[i] = 0;
 	}
 
+	state->regHi = 0;
+	state->regLo = 0;
+
 	state->mem = mem;
 
 
@@ -47,6 +52,8 @@ mips_error mips_cpu_reset(mips_cpu_h state){
 	for(unsigned i = 0; i < 32; i++){
 		state->regs[i] = 0;
 	}
+	state->regHi = 0;
+	state->regLo = 0;
 	return mips_Success;
 }
 
@@ -179,6 +186,9 @@ mips_error mips_cpu_get_pc_next(mips_cpu_h state, uint32_t *pc){
 	return mips_Success;
 }
 
+mips_error MFHI(uint32_t rd, mips_cpu_impl *state){
+	return mips_cpu_set_register(state, rd, state->regHi);
+}
 
 
 

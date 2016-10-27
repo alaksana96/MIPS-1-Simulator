@@ -6,9 +6,9 @@
  */
 
 #include "mips.h"
-#include "mips_cpu_pc_next_instructions.h"
 #include <bitset>
 #include <iostream>
+#include "src/apl115/mips_cpu_extra.h"
 
 using namespace std;
 

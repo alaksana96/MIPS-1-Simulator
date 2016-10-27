@@ -7,7 +7,7 @@
 
 #include "mips.h"
 #include "mips_cpu_instructions.h"
-
+#include "mips_cpu_extra.h"
 #include <iostream>
 #include <bitset>
 
@@ -70,6 +70,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 16:
 		//MFHI
+		return MFHI(rd, state);
 		break;
 	case 17:
 		//MTHI

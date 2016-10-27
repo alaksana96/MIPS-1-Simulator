@@ -6,9 +6,9 @@
  */
 
 #include "mips.h"
-#include "mips_cpu_pc_next_instructions.h"
 #include <bitset>
 #include <iostream>
+#include "mips_cpu_extra.h"
 
 
 using namespace std;
@@ -1492,41 +1492,37 @@ int main(){
 	mips_test_end_test(testId, passed, "31 contained Address 1020");
 
 	/*#######################################################################*/
-	/*
-	err = mips_cpu_reset(cpu);
+	/*#######################################################################*/
+	/*#######################################################################*/
+	/*#######################################################################*/
 
-	testId = mips_test_begin_test("LBU");
+
+	mips_cpu_free(cpu);
+
+	mips_mem_h newMem = mips_mem_create_ram(4096);
+	mips_cpu_h newCPU = mips_cpu_create(newMem);
+
+	testId = mips_test_begin_test("MFHI");
 	passed = 0;
 
-	instruction = (0b100100 << 26) | (16ul << 21) | (17ul << 16) | (0x1 << 0);
+	instruction = (0ul << 26) | (0ul << 21) | (0ul << 16) | (15ul << 11) | (0ul << 6) | (0b010000 << 0);
+
 	buffer[0] = (instruction >> 24) & 0xFF;
 	buffer[1] = (instruction >> 16) & 0xFF;
 	buffer[2] = (instruction >> 8) & 0xFF;
 	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
 
-	err = mips_cpu_set_pc(cpu, 0);
-	err = mips_mem_write(mem, 0, 4, buffer);
+	mips_cpu_get_pc(newCPU, &PC);
+	mips_mem_write(newMem, PC, 4, buffer);
 
-	uint32_t val = 0xFFFF1234;
-	buffer[0] = (val >> 24) & 0xFF;
-	buffer[1] = (val >> 16) & 0xFF;
-	buffer[2] = (val >> 8) & 0xFF;
-	buffer[3] = (val >> 0) & 0xFF;
+	mips_cpu_set_register(newCPU, 15, 10); //We want to move the MFHI value to register 15, should be 0;
 
-	err = mips_mem_write(mem, 0xF0005, 4, buffer);
+	mips_cpu_step(newCPU);
 
-	err = mips_cpu_set_register(cpu, 16, 0x000F0004);
-	err = mips_cpu_set_register(cpu, 17, 0b1);
+	mips_cpu_get_register(newCPU, 15, &result);
 
-	err = mips_cpu_step(cpu);
-
-	err = mips_cpu_get_register(cpu, 17, &result);
-
-	cout << result << endl;
-	passed = (result == 0xFF);
-	mips_test_end_test(testId, passed, "Result was: 50000");
-	 */
-
+	passed = (result == 0); //not 10
+	mips_test_end_test(testId, passed, "MFHI reg value = 0, moved to reg 15");
 
 	mips_test_end_suite();
 
