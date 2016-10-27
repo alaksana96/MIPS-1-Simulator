@@ -202,6 +202,21 @@ int main(){
 	passed = (result == 0);
 	mips_test_end_test(testId, passed, "Overflow, Positive");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("ADDIU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+	instr = 0x25CDFF10; //addiu r13 r14 0xFF10
+	setupTestI(cpu, mem, instr, 0x400, 420, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 13, &result);
+	passed = (result == 0x10310);
+	mips_test_end_test(testId, passed, "Answer = 0x10310");
+
 	mips_test_end_suite();
 
 }
