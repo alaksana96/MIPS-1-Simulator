@@ -124,6 +124,10 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	case 36:
 		//AND
 		return AND(srca, srcb, rd, state);
+		if(mips_cpu_get_debug_level(state) >= 1){
+			fprintf(stderr, "AND.\n");
+			fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
+		}
 		break;
 	case 37:
 		//OR

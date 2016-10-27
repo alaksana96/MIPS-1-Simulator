@@ -5,8 +5,8 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 1|ADD   |  Add (with overflow)                      | 2  XX       | YES             |         | YES
 2|ADDI  |  Add immediate (with overflow)            | 2  XX       | YES  	||YES
 3|ADDIU |  Add immediate unsigned (no overflow)     | 2  XX       | YES |	| YES
-4|ADDU  |  Add unsigned (no overflow)               | 1  X        | YES |
-5|AND   |  Bitwise and                              | 1  X        | YES |
+4|ADDU  |  Add unsigned (no overflow)               | 1  X        | YES | | YES
+5|AND   |  Bitwise and                              | 1  X        | YES | | YES
 6|ANDI  |  Bitwise and immediate                    | 2  XX       | YES |
 7|BEQ   |  Branch on equal                          | 3  XXX      | YES | Bit more testing
 8|BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing

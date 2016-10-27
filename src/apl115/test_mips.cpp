@@ -87,6 +87,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADD");
+	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -105,6 +106,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADD");
+	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -122,6 +124,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADD");
+	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -151,6 +154,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADDI");
+	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -177,6 +181,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADDI");
+	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -191,6 +196,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADDI");
+	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -206,6 +212,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADDIU");
+	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -217,10 +224,11 @@ int main(){
 	passed = (result == 0x10310);
 	mips_test_end_test(testId, passed, "Answer = 0x10310");
 
-	testId = mips_test_begin_test("ADDU");
-	mips_cpu_get_pc(cpu, &PC);
-	mips_cpu_get_pc_next(cpu, &PCNEXT);
 	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("ADDU");
+	passed = 0;
 	instr = 0x02117821; //addu r15 r16 r17
 	setupTestR(cpu, mem, instr, 0x400, 420, 0, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
@@ -231,6 +239,16 @@ int main(){
 
 	/*------------------------------------------------------------------*/
 	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("AND");
+
+	instr = 0x01AE6024; //and r12 r13 r14
+	setupTestR(cpu, mem, instr, 0xFF00, 0xAAAA, 0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 12, &result);
+	passed = (result == (0xAA00));
+	mips_test_end_test(testId, passed, "Answer = ");
 
 	mips_test_end_suite();
 
