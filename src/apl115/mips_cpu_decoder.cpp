@@ -107,6 +107,10 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 33:
 		//ADDU
+		if(mips_cpu_get_debug_level(state) >= 1){
+			fprintf(stderr, "ADDU.\n");
+			fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
+		}
 		return ADDU(srca, srcb, rd, state);
 		break;
 	case 34:
@@ -220,6 +224,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 9:
 			//ADDIU
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "ADDIU.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
 			return ADDIU(srca, rt, immed16, state);
 			break;
 		case 10:

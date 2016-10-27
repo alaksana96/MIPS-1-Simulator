@@ -217,6 +217,21 @@ int main(){
 	passed = (result == 0x10310);
 	mips_test_end_test(testId, passed, "Answer = 0x10310");
 
+	testId = mips_test_begin_test("ADDU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	/*------------------------------------------------------------------*/
+	instr = 0x02117821; //addu r15 r16 r17
+	setupTestR(cpu, mem, instr, 0x400, 420, 0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 15, &result);
+	passed = (result == (0x400 + 420));
+	mips_test_end_test(testId, passed, "Answer = 1444");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
 	mips_test_end_suite();
 
 }
