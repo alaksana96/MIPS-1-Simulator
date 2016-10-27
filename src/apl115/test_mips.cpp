@@ -82,7 +82,7 @@ int main(){
 
 	uint32_t PC, PCNEXT;
 
-	mips_cpu_set_debug_level(cpu, 2, stderr);
+	mips_cpu_set_debug_level(cpu, 0, stderr);
 
 	/*------------------------------------------------------------------*/
 
@@ -229,6 +229,9 @@ int main(){
 
 	testId = mips_test_begin_test("ADDU");
 	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
 	instr = 0x02117821; //addu r15 r16 r17
 	setupTestR(cpu, mem, instr, 0x400, 420, 0, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
@@ -243,6 +246,9 @@ int main(){
 	testId = mips_test_begin_test("AND");
 
 	instr = 0x01AE6024; //and r12 r13 r14
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
 	setupTestR(cpu, mem, instr, 0xFF00, 0xAAAA, 0, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu);
@@ -255,6 +261,9 @@ int main(){
 
 	testId = mips_test_begin_test("ANDI");
 
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
 	instr = 0x3062AAAA; //andi r2 r3 0xaaaa
 	setupTestI(cpu, mem, instr, 0xFFFF, 0x0, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
@@ -263,6 +272,24 @@ int main(){
 	passed = (result == (0xAAAA));
 	mips_test_end_test(testId, passed, "Answer = 0xAAAA");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BEQ");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x114B0010; //beq r10 r11 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x3, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BEQ
+	mips_cpu_step(cpu); //Does Delay
+	err = mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PC+4)+64);
+
+	mips_test_end_test(testId, passed, "branched");
 	mips_test_end_suite();
 
 }

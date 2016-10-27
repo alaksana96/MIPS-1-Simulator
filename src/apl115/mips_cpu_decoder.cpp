@@ -174,6 +174,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	err = mips_cpu_get_register(state, rs, &srca);
 	err = mips_cpu_get_register(state, rt, &srcb);
 
+	uint32_t originalPC, originalPCNext;
+	mips_cpu_get_pc(state, &originalPC);
+	mips_cpu_get_pc_next(state, &originalPCNext);
+
 
 	switch(opcode)
 	{
@@ -224,7 +228,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "ADDI.\n");
 				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
 			}
-			return ADDI(srca, rt, immed16, state);
+			ADDI(srca, rt, immed16, state);
 			break;
 		case 9:
 			//ADDIU
@@ -232,16 +236,16 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "ADDIU.\n");
 				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
 			}
-			return ADDIU(srca, rt, immed16, state);
+			ADDIU(srca, rt, immed16, state);
 			break;
 		case 10:
 			//SLTI
-			return SLTI(srca, rt, immed16, state);
+			SLTI(srca, rt, immed16, state);
 			break;
 
 		case 11:
 			//SLTIU
-			return SLTIU(srca, rt, immed16, state);
+			SLTIU(srca, rt, immed16, state);
 			break;
 		case 12:
 			//ANDI
@@ -249,57 +253,58 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "ANDI.\n");
 				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
 			}
-			return ANDI(srca, rt, immed16, state);
+			ANDI(srca, rt, immed16, state);
 			break;
 		case 13:
 			//ORI
-			return ORI(srca, rt, immed16, state);
+			ORI(srca, rt, immed16, state);
 			break;
 		case 14:
 			//XORI
-			return XORI(srca, rt, immed16, state);
+			XORI(srca, rt, immed16, state);
 			break;
 		case 15:
 			//LUI
-			return LUI(rt, immed16, state);
+			LUI(rt, immed16, state);
 			break;
 		case 32:
 			//LB
-			return LB(srca, rt, immed16, state, mem);
+			LB(srca, rt, immed16, state, mem);
 			break;
 		case 33:
 			//LH
-			return LH(srca, rt, immed16, state, mem);
+			LH(srca, rt, immed16, state, mem);
 			break;
 		case 35:
 			//LW
-			return LW(srca, rt, immed16, state, mem);
+			LW(srca, rt, immed16, state, mem);
 			break;
 		case 36:
 			//LBU
-			return LBU(srca, rt, immed16, state, mem);
+			LBU(srca, rt, immed16, state, mem);
 			break;
 		case 37:
 			//LHU
-			return LHU(srca, rt, immed16, state, mem);
+			LHU(srca, rt, immed16, state, mem);
 			break;
 		case 40:
 			//SB
-			return SB(srca, srcb, immed16, state, mem);
+			SB(srca, srcb, immed16, state, mem);
 			break;
 		case 41:
 			//SH
-			return SH(srca, srcb, immed16, state, mem);
+			SH(srca, srcb, immed16, state, mem);
 			break;
 		case 43:
 			//SW
-			return SW(srca, srcb, immed16, state, mem);
+			SW(srca, srcb, immed16, state, mem);
 			break;
 
 	}
 
-
-	return mips_ErrorNotImplemented;
+	mips_cpu_set_pc(state, originalPCNext);
+	mips_cpu_set_pc_next(state, originalPCNext+4);
+	return mips_Success;
 
 }
 
@@ -328,45 +333,34 @@ mips_error decodeJInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* state){
 
-	uint32_t opcode;
+	uint32_t opcode, srca;
 	mips_error err;
 
 	uint32_t originalPC, originalPCNext;
-	err = mips_cpu_get_pc(state, &originalPC);
-	err = mips_cpu_get_pc_next(state, &originalPCNext);
-
-	bool flag = 0;
+	mips_cpu_get_pc(state, &originalPC);
+	mips_cpu_get_pc_next(state, &originalPCNext);
 
 	opcode = instr >> 26;
 
 	switch (opcode)
 	{
 	case 0:
-		return decodeRInstruction(instr, mem, state);
+		err = decodeRInstruction(instr, mem, state);
 		break;
 
 	case 2: //J
-		return decodeJInstruction(instr, mem, state);
+		err = decodeJInstruction(instr, mem, state);
 		break;
 
 	case 3: //JAL
-		decodeJInstruction(instr, mem, state);
+		err = decodeJInstruction(instr, mem, state);
 		break;
 
 	default :
-		return decodeIInstruction(instr, mem, state);
+		err = decodeIInstruction(instr, mem, state);
 		break;
 
 	}
 
-	uint32_t checkPC, checkPCNext;
-	err = mips_cpu_get_pc(state, &checkPC);
-	err = mips_cpu_get_pc_next(state, &checkPCNext);
-
-	if(opcode != 1 && opcode != 4 && opcode != 5 && opcode != 6 && opcode != 7){
-		err = mips_cpu_set_pc(state, checkPC+4);
-		err = mips_cpu_set_pc_next(state, checkPC+8);
-	}
-
-	return mips_ErrorNotImplemented;
+	return err;
 }
