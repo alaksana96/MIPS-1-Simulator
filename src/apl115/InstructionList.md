@@ -24,7 +24,7 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 20|JR    |  Jump register                            | 3  XXX      |     |
 21|LB    |  Load byte                                | 3  XXX      | YES | 
 22|LBU   |  Load byte unsigned                       | 3  XXX      | YES    |
-23|LH    |  Load half-word                           | 3  XXX      |     |
+23|LH    |  Load half-word                           | 3  XXX      | YES    |
 24|LHU   |  Load half-word unsigned                  | 3  XXX      |     |
 25|LUI   |  Load upper immediate                     | 2  XX       |     |
 26|LW    |  Load word                                | 2  XX       | YES

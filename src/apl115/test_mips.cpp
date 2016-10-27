@@ -1287,9 +1287,32 @@ int main(){
 	result = (buffer[0] << 8 | buffer[1] << 0);
 
 	passed = (result == 400);
-	mips_test_end_test(testId, passed, "Result: 40, was written to 0x000F0005");
+	mips_test_end_test(testId, passed, "Result: 400, was written to 0x000F000A");
 
 	err = mips_cpu_get_pc(cpu, &PC);
+
+	/*#######################################################################*/
+
+	testId = mips_test_begin_test("LH");
+	passed = 0;
+
+	instruction = (100001 << 26) | (16ul << 21) | (17ul << 16) | (0x0006 << 0);
+	buffer[0] = (instruction >> 24) & 0xFF;
+	buffer[1] = (instruction >> 16) & 0xFF;
+	buffer[2] = (instruction >> 8) & 0xFF;
+	buffer[3] = (instruction >> 0) & 0xFF; //Convert to little-endian
+
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_mem_write(mem, PC, 4, buffer);
+
+	err = mips_cpu_set_register(cpu, 16, 0x000F0004);
+	err = mips_cpu_set_register(cpu, 17, 400);
+
+	err = mips_cpu_step(cpu);
+
+	err = mips_cpu_get_register(cpu, 17, &result);
+	passed = (result == 400);
+	mips_test_end_test(testId, passed, "Read 400 from 0x000F000A");
 
 
 
