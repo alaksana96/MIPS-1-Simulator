@@ -9,6 +9,7 @@
 
 #include "mips_cpu_decoder.h"
 #include "mips_cpu_instructions.h"
+#include <bitset>
 #include <assert.h>
 #include <iostream>
 
@@ -22,6 +23,10 @@ struct mips_cpu_impl{
 	mips_mem_h mem;
 	uint32_t regHi;
 	uint32_t regLo;
+
+	uint32_t n2, n1, n;
+
+
 	unsigned logLevel;
 	FILE *logFile;
 };
@@ -38,7 +43,7 @@ mips_cpu_h mips_cpu_create(mips_mem_h mem){
 
 	state->regHi = 0;
 	state->regLo = 0;
-
+	state->n2 = 0; state->n1 = 0; state->n = 0;
 	state->mem = mem;
 
 
@@ -54,6 +59,7 @@ mips_error mips_cpu_reset(mips_cpu_h state){
 	}
 	state->regHi = 0;
 	state->regLo = 0;
+	state->n2 = 0; state->n1 = 0; state->n = 0;
 	return mips_Success;
 }
 
@@ -127,6 +133,7 @@ mips_error mips_cpu_step(
 		mips_cpu_h state
 
 ){
+
 	uint8_t buffer[4];
 
 	uint32_t pcOrig, pcGot;
@@ -143,10 +150,17 @@ mips_error mips_cpu_step(
 
 	uint32_t instr = littleToBig(buffer); //Start working in BigEndian
 
+	state->n2 = state->n1;   //Remember the N-2 Instruction
+	state->n1 = state->n;    //Remember the N-1 Instruction
+	state->n  = instr; //current instruction
+
 	err = decodeInstruction(instr, state->mem, state);
-
-
-
+	/*
+	cout << "---------" << endl;
+	cout << bitset<32>(state->n2) << endl;
+	cout << bitset<32>(state->n1) << endl;
+	cout << bitset<32>(state->n) << endl;
+	*/
 	return mips_Success;
 
 
@@ -194,7 +208,14 @@ mips_error MFLO(uint32_t rd, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, state->regLo);
 }
 
+mips_error MTHI(uint32_t rs, uint32_t func, mips_cpu_impl *state){
+	if((((state->n2) & 0x3F) != func) && (((state->n1) & 0x3F) != func)){
+		state->regHi = rs;
+		return mips_Success;
+	}
+	//undefined
+	return mips_Success;
 
-
+}
 
 

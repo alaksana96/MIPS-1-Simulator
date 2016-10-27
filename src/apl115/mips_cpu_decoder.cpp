@@ -74,6 +74,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 17:
 		//MTHI
+		return MTHI(srca, func, state);
 		break;
 	case 18:
 		//MFLO
@@ -337,8 +338,8 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	err = mips_cpu_get_pc_next(state, &checkPCNext);
 
 	if(opcode != 1 && opcode != 4 && opcode != 5 && opcode != 6 && opcode != 7){
-		err = mips_cpu_set_pc(state, originalPCNext);
-		err = mips_cpu_set_pc_next(state, originalPCNext+4);
+		err = mips_cpu_set_pc(state, checkPC+4);
+		err = mips_cpu_set_pc_next(state, checkPC+8);
 	}
 
 	return mips_ErrorNotImplemented;

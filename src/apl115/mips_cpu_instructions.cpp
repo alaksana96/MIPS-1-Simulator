@@ -53,13 +53,6 @@ mips_error SRAV(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 }
 
 
-/*mips_error MTHI(uint32_t rs, mips_cpu_impl *state){
-
-
-	state->regHi = rs;
-	return M
-}*/
-
 mips_error ADD(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	if(((!isNegative32(rs) && !isNegative32(rt)) && isNegative32((uint32_t)((int32_t)rs + (int32_t)rt)))
 			||

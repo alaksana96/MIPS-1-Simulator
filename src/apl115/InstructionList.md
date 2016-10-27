@@ -32,7 +32,7 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 28|LWR   |  Load word right                          | 5  XXXXX    |
 29|MFHI  |  Move from HI                             | 3  XXX      | YES
 30|MFLO  |  Move from LO                             | 3  XXX      | YES
-31|MTHI  |  Move to HI                               | 3  XXX      |
+31|MTHI  |  Move to HI                               | 3  XXX      | YES | Tested for N-1, need to check N-2
 32|MTLO  |  Move to LO                               | 3  XXX      |
 33|MULT  |  Multiply                                 | 4  XXXX     |
 34|MULTU |  Multiply unsigned                        | 4  XXXX     |
