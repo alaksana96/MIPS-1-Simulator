@@ -100,9 +100,9 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	case 32:
 		//ADD
 		if(mips_cpu_get_debug_level(state) >= 1){
-				fprintf(stderr, "ADD.\n");
-				fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
-			}
+			fprintf(stderr, "ADD.\n");
+			fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
+		}
 		return ADD(srca, srcb, rd, state);
 		break;
 	case 33:
@@ -212,6 +212,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 8:
 			//ADDI
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "ADDI.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
 			return ADDI(srca, rt, immed16, state);
 			break;
 		case 9:
@@ -322,11 +326,11 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	switch (opcode)
 	{
 	case 0:
-		decodeRInstruction(instr, mem, state);
+		return decodeRInstruction(instr, mem, state);
 		break;
 
 	case 2: //J
-		decodeJInstruction(instr, mem, state);
+		return decodeJInstruction(instr, mem, state);
 		break;
 
 	case 3: //JAL
@@ -334,7 +338,7 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 		break;
 
 	default :
-		decodeIInstruction(instr, mem, state);
+		return decodeIInstruction(instr, mem, state);
 		break;
 
 	}
