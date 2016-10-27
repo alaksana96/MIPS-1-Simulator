@@ -271,6 +271,15 @@ mips_error LBU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, m
 	return mips_cpu_set_register(state, rt, (uint32_t)buffer);
 }
 
+mips_error LHU(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
+	uint8_t buffer[2];
+	mips_error c = mips_mem_read(mem, (rs + (uint32_t)((int16_t)immed)), 2, buffer);
+	if((rs + (uint32_t)((int16_t)immed)) % 2 != 0){
+		return mips_ExceptionInvalidAddress;
+	}
+	uint32_t result = ((buffer[0] << 8 | buffer[1] << 0));
+	return mips_cpu_set_register(state, rt, result);
+}
 
 mips_error SB(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){
 	uint8_t buffer = (uint8_t)(0x000000FF & rt);
