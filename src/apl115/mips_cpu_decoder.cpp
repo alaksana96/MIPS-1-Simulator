@@ -232,6 +232,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 5:
 			//BNE
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BNE.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
 			return BNE(srca, srcb, immed16, state);
 			break;
 		case 6:

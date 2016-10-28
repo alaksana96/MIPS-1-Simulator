@@ -15,7 +15,7 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 11|BLEZ  |  Branch on less than or equal to zero     | 3  XXX      | YES | NEED TO TEST | YES
 12|BLTZ  |  Branch on less than zero                 | 3  XXX      | YES | NEED TO TEST | YES
 13|BLTZAL|  Branch on less than zero and link        | 4  XXXX     | YES | NEED TO TEST | YES
-14|BNE   |  Branch on not equal                      | 3  XXX      | YES | NEED TO TEST
+14|BNE   |  Branch on not equal                      | 3  XXX      | YES | NEED TO TEST | YES
 15|DIV   |  Divide                                   | 4  XXXX     |     |
 16|DIVU  |  Divide unsigned                          | 4  XXXX     |     |
 17|J     |  Jump                                     | 3  XXX      |     |

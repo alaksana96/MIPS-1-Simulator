@@ -616,6 +616,42 @@ int main(){
 	passed = ((result == (PCNEXT+4)) && (linkReg == 690));
 	mips_test_end_test(testId, passed, "BLTZAL did not branch, 690 stored in Reg31");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BNE");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x152A0010; //bne r9 r10 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x3, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BNE
+	err = mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == PCNEXT+4);
+
+	mips_test_end_test(testId, passed, "branched");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BNE");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x152A0010; //bne r9 r10 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x4, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BEQ
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PCNEXT)+64);
+	mips_test_end_test(testId, passed, "Not branched");
+
+
 	mips_test_end_suite();
 
 }
