@@ -18,10 +18,10 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 14|BNE   |  Branch on not equal                      | 3  XXX      | YES | NEED TO TEST | YES
 15|DIV   |  Divide                                   | 4  XXXX     | YES    |
 16|DIVU  |  Divide unsigned                          | 4  XXXX     | YES    |
-17|J     |  Jump                                     | 3  XXX      | YES    |
-18|JALR  |  Jump and link register                   | 4  XXXX     | YES   |
-19|JAL   |  Jump and link                            | 4  XXXX     | YES    |
-20|JR    |  Jump register                            | 3  XXX      | YES    |
+17|J     |  Jump                                     | 3  XXX      | YES    | |YES
+18|JALR  |  Jump and link register                   | 4  XXXX     | YES   | |YES
+19|JAL   |  Jump and link                            | 4  XXXX     | YES    | |YES
+20|JR    |  Jump register                            | 3  XXX      | YES    | |YES
 21|LB    |  Load byte                                | 3  XXX      | YES | | YES
 22|LBU   |  Load byte unsigned                       | 3  XXX      | YES    | | YES
 23|LH    |  Load half-word                           | 3  XXX      | YES    | Test for Sign extend | YES

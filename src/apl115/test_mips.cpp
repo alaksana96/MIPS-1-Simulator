@@ -1620,7 +1620,91 @@ int main(){
 	passed = (result == 0xFFFFAAAF);
 	mips_test_end_test(testId, passed, "Result was: 0xFFFFAAAF");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("J");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x08000200; //j 0x200
+	writeInstrToMem(cpu, mem, PC, instr);
+	instr = 0x0;
+	writeInstrToMem(cpu, mem, PCNEXT, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+
+	passed = (result == 2052);
+	mips_test_end_test(testId, passed, "Branched to 2052");
+	//branch amount = 2048
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("JAL");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x0C000110; //jal 0x110
+	writeInstrToMem(cpu, mem, PC, instr);
+	instr = 0x0;
+	writeInstrToMem(cpu, mem, PCNEXT, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 31, &linkReg);
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+
+	passed = ((result == 1092) && (linkReg == 8));
+	mips_test_end_test(testId, passed, "Branched to 28, stored 8 in reg 31");
+	//branch amount = 24
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("JALR");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x01E07009; //jalr r14 r15
+	writeInstrToMem(cpu, mem, PC, instr);
+	setupTestR(cpu, mem, instr, 0x100, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	instr = 0x0;
+	writeInstrToMem(cpu, mem, PCNEXT, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &linkReg);
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+
+	passed = ((result == 256) && (linkReg == 8));
+	mips_test_end_test(testId, passed, "Branched to 256, stored 8 in reg 14");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("JR");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x02800008; //jr r20
+	writeInstrToMem(cpu, mem, PC, instr);
+	setupTestR(cpu, mem, instr, 0x110, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	instr = 0x0;
+	writeInstrToMem(cpu, mem, PCNEXT, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+
+	passed = ((result == 272));
+	mips_test_end_test(testId, passed, "Branched to 272");
 
 
 	mips_test_end_suite();

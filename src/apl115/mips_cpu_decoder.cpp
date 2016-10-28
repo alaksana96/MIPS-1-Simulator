@@ -411,14 +411,14 @@ mips_error decodeJInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	case 0b000010:
 		//J
 		mips_cpu_set_pc(state, originalPCNext);
-		return mips_cpu_set_pc_next(state, jump);
+		return mips_cpu_set_pc_next(state, (originalPCNext + jump));
 		break;
 
 	case 0b000011:
 		//JAL
 		mips_cpu_set_pc(state, originalPCNext);
 		mips_cpu_set_register(state, 31, originalPC+8);
-		return mips_cpu_set_pc_next(state, jump);
+		return mips_cpu_set_pc_next(state, (originalPCNext + jump));
 		break;
 	}
 
