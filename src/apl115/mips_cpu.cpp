@@ -213,24 +213,25 @@ mips_error MFLO(uint32_t rd, mips_cpu_impl *state){
 }
 
 mips_error MTHI(uint32_t rs, mips_cpu_impl *state){
-	if((((state->n2) & 0x3F) == 0b010000)){
+	/*if((((state->n2) & 0x7FF) == 0b10000) && (((state->n2)& 0xFFFF0000) == 0)){
 		return mips_Success;
-	}else if((((state->n1) & 0x3F) == 0b010000)){
+	}else if((((state->n1) & 0x7FF) == 0b10000) && (((state->n1)& 0xFFFF0000) == 0)){
 		return mips_Success;
-	} else {
+	} else {*/
 		state->regHi = rs;
+		cout << state->regHi << " FD" << endl;
 		return mips_Success;
-	}
+	//}
 	//undefined
-	return mips_Success;
+	//return mips_Success;
 
 }
 
 mips_error MTLO(uint32_t rs, mips_cpu_impl *state){
-	if((((state->n2) & 0x3F) != 0b010010) && (((state->n1) & 0x3F) != 0b010010)){
-		state->regLo = rs;
-		return mips_Success;
-	}
+	//if((((state->n2) & 0x3F) != 0b010010) && (((state->n1) & 0x3F) != 0b010010)){
+		//state->regLo = rs;
+		//return mips_Success;
+	//}
 	//undefined
 	return mips_Success;
 

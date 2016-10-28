@@ -348,7 +348,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("BGEZAL");
-	passed = 0;
+	passed = 0;passed =
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
@@ -430,7 +430,7 @@ int main(){
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
-
+	passed =
 	instr = 0x1DE00010; //bgtz r15 0x10
 	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
@@ -841,7 +841,6 @@ int main(){
 	mips_cpu_step(cpu);
 	mips_cpu_get_register(cpu, 14, &result);
 
-	cout << result << endl;
 	passed = (result == 0xAAFFBBCC);
 	mips_test_end_test(testId, passed, "Loaded 0xAAFFBBCC");
 
@@ -858,9 +857,95 @@ int main(){
 	mips_cpu_step(cpu);
 	mips_cpu_get_register(cpu, 14, &result);
 
-	cout << result << endl;
 	passed = (result == 0x01220BCC);
 	mips_test_end_test(testId, passed, "Loaded 0x01220BCC");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+
+	testId = mips_test_begin_test("MFHI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x0000A010; //mfhi r20
+	setupTestR(cpu, mem, instr, 0x0, 0x0, 300, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 20, &result);
+
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Loaded MFHI");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("MFLO");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x0000A812; //mflo r21
+	setupTestR(cpu, mem, instr, 0x0, 0x0, 420, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 21, &result);
+
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Loaded MFLO");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("MTHI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	mips_cpu_set_register(cpu, 20, 1000);
+	mips_cpu_get_register(cpu, 20, &result);
+
+	instr = 0x02A00011; //mthi r21
+	setupTestR(cpu, mem, instr, 420, 0x0, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	instr = 0x0000A010; //mfhi r20
+	setupTestR(cpu, mem, instr, 0x0, 0x0, 300, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 20, &result);
+	cout << result << endl;
+
+	passed = (result == 420);
+	mips_test_end_test(testId, passed, "MFHI was set to 420");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("MTLO");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	mips_cpu_set_register(cpu, 20, 1000);
+	mips_cpu_get_register(cpu, 20, &result);
+
+	instr = 0x02800013; //mtlo r20
+	setupTestR(cpu, mem, instr, 420690, 0x0, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	instr = 0x0000A812; //mflo r21
+	setupTestR(cpu, mem, instr, 0x0, 0x0, 300, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 20, &result);
+	cout << result << endl;
+
+	passed = (result == 420690);
+	mips_test_end_test(testId, passed, "MFHI was set to 420");
+
 
 
 
