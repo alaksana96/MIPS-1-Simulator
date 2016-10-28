@@ -1,5342 +1,1643 @@
+/*
+ * test_mips_revamped.cpp
+ *
+ *  Created on: 26 Oct 2016
+ *      Author: apl115
+ */
+
 #include "mips.h"
+#include <bitset>
 #include <iostream>
-#include <string>
 
 using namespace std;
 
-void setregisters(mips_cpu_h state);
-int test_addu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_add(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_subu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sub(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_and(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_or(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_xor(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_addiu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_addi(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_ori(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_andi(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_xori(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sltu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_slt(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sltiu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_slti(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sll(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_srl(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sllv(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_srlv(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sra(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_srav(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sw(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_lw(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sb(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_lb(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_sh(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_lh(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_lhu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_lbu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_lui(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_beq(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bne(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bgtz(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_blez(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bgez(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bltz(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bgezal(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bltzal(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
+uint32_t littleToBigEnd(const uint8_t *memData){
+	return (((uint32_t)memData[0]) << 24) | (((uint32_t)memData[1] << 16)) | (((uint32_t)memData[2]) << 8) | (((uint32_t)memData[3]));
+}
 
-int test_beqNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bneNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bgtzNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_blezNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bgezNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_bltzNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
+mips_error writeInstrToMem(mips_cpu_h state, mips_mem_h mem, uint32_t addr, uint32_t instr){
+	uint8_t buffer[4];
+	buffer[0] = (instr >> 24) & 0xFF;
+	buffer[1] = (instr >> 16) & 0xFF;
+	buffer[2] = (instr >> 8) & 0xFF;
+	buffer[3] = (instr >> 0) & 0xFF;
+	return mips_mem_write(mem, addr, 4, buffer);
+}
 
-int test_j(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_jal(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_jr(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
-int test_jalr(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err);
+void setupTestR(mips_cpu_h state, mips_mem_h mem, uint32_t instr, uint32_t rsV, uint32_t rtV, uint32_t rdV, int test, uint32_t PC, uint32_t PCNext, uint32_t debug){
+	uint32_t rs, rt, rd, shift, func;
+	rs = instr >> 21;
+	rt = (instr & 0x1F0000) >> 16;
+	rd = (instr & 0xF800) >> 11;
+	shift = (instr & 0x7C0) >> 6;
+	func = instr & 0x3F;
 
+	mips_cpu_set_register(state, rs, rsV);
+	mips_cpu_set_register(state, rt, rtV);
+	mips_cpu_set_register(state, rd, rdV);
 
+	if(debug > 0){
+		fprintf(stderr, "\ntest=%u, rd=%u, rs=%u, rt=%u, shift=%u.\n", test, rd, rs, rt, shift);
+	}
 
-uint32_t to_big(const uint8_t *pData);
-uint32_t to_big16(const uint8_t *pData);
+	if(debug >=2){
+		fprintf(stderr, "instruction=%08x, PC=%08x, PCNEXT=%08x.\n", instr, PC, PCNext,  debug);
+	}
+}
+
+void setupTestI(mips_cpu_h state, mips_mem_h mem, uint32_t instr, uint32_t rsV, uint32_t rtV, int test, uint32_t PC, uint32_t PCNext, uint32_t debug){
+	uint32_t opcode,rs, rt, immed;
+	opcode = instr >> 26;
+	rs = (instr & 0x3E00000) >> 21;
+	rt = (instr & 0x1F0000) >> 16;
+	immed = (instr & 0xFFFF);
+
+	mips_cpu_set_register(state, rs, rsV);
+	mips_cpu_set_register(state, rt, rtV);
+
+	if(debug > 0){
+		fprintf(stderr, "\ntest=%u, rs=%u, rt=%u, immed=%u.\n", test, rs, rt, immed);
+	}
+
+	if(debug >=2){
+		fprintf(stderr, "instruction=%08x, PC=%08x, PCNEXT=%08x.\n", instr, PC, PCNext, debug);
+	}
+}
 
 
 
 int main(){
 
-	mips_mem_h mem = mips_mem_create_ram(4096); //create memory
+	mips_mem_h mem = mips_mem_create_ram(4096);
+	mips_cpu_h cpu = mips_cpu_create(mem);
 
-    mips_cpu_h cpu = mips_cpu_create(mem); //create cpu
+	mips_test_begin_suite();
 
-    mips_error err;
+	mips_error err;
+	int testId, passed;
+	uint32_t instr, result;
+	uint8_t temp8;
+	uint8_t buffer[4];
+	uint32_t linkReg;
 
-    mips_test_begin_suite(); // begin test suite
+	uint32_t PC, PCNEXT;
 
-    int passed;
+	uint32_t debugLvl = 0;
+	mips_cpu_set_debug_level(cpu,debugLvl, stderr);
 
-//ADDU----------------------------------------------------
-    uint32_t decodedBinary = 0x00832821;
-
-    int testId = mips_test_begin_test("ADDU");
-
-    setregisters(cpu); //set the registers
-
-    passed = test_addu(decodedBinary, cpu, mem, err);
-
-    mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ADDU (not writing to R0)");
-
-    err = mips_cpu_reset(cpu);
-//========================================================
-    decodedBinary = 0x00220021;
-
-    testId = mips_test_begin_test("ADDU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_addu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ADDU (writing to R0)");
-
-	err = mips_cpu_reset(cpu);
-//ADD-----------------------------------------------------
-	decodedBinary = 0x00432021; //-1+1
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADD");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
+	instr = 0x00430820; //ADD R1 R2 R3
+	setupTestR(cpu, mem, instr, 0x4350, 0x53900, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
 
-	passed = test_add(decodedBinary, cpu, mem, err);
+	mips_cpu_step(cpu); //Step CPU
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ADD (-1+1)");
+	mips_cpu_get_register(cpu, 1, &result);
 
-	err = mips_cpu_reset(cpu);
-//=========================================================
-	decodedBinary = 0x00851820; //overflow
+	passed = (result == 0x57C50);
 
-	testId = mips_test_begin_test("ADD");
+	mips_test_end_test(testId, passed, "ADD 0x4350 + 0x53900 = 0x57C50");
 
-	setregisters(cpu); //set the registers
-
-	passed = test_add(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ADD (overflow)");
-
-	err = mips_cpu_reset(cpu);
-//=========================================================
-	decodedBinary = 0x00C62820; //overflow
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADD");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
+	instr = 0x016C5020; //ADD R10 R11 R12
+	setupTestR(cpu, mem, instr, -100, -400, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
 
-	passed = test_add(decodedBinary, cpu, mem, err);
+	mips_cpu_step(cpu);
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ADD (overflow)");
+	mips_cpu_get_register(cpu, 10, &result);
 
-	err = mips_cpu_reset(cpu);
-//=========================================================
-	decodedBinary = 0x00E92820; //no overflow
+	passed = (result == -500);
+	mips_test_end_test(testId, passed, "ADD -100 + -400 = -500");
 
-	testId = mips_test_begin_test("ADD");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_add(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ADD (no overflow)");
-
-	err = mips_cpu_reset(cpu);
-//=========================================================
-	decodedBinary = 0x00220020; //writing into r0
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ADD");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
+	instr = 0x035BC820; //ADD R25 R26 R27
+	setupTestR(cpu, mem, instr, 0x7FFFFFFF, 0x1, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
 
-	passed = test_add(decodedBinary, cpu, mem, err);
+	err = mips_cpu_step(cpu);
+	passed = (err = mips_ExceptionArithmeticOverflow);
+	mips_test_end_test(testId, passed, "Overflow");
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ADD (writing into r0)");
+	/*------------------------------------------------------------------*/
 
-	err = mips_cpu_reset(cpu);
-//SUBU------------------------------------------------------
-	decodedBinary = 0x00EA2823; //no overflow
+	testId = mips_test_begin_test("ADD");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	testId = mips_test_begin_test("SUBU");
+	instr = 0x014E9820; //ADD R19 R10 R14
+	setupTestR(cpu, mem, instr, 0x80000000, 0xFFFFFFFF, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
+	passed = (err = mips_ExceptionArithmeticOverflow);
+	mips_test_end_test(testId, passed, "Overflow");
 
-	setregisters(cpu); //set the registers
 
-	passed = test_subu(decodedBinary, cpu, mem, err);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing SUBU");
+	testId = mips_test_begin_test("ADDI");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	err = mips_cpu_reset(cpu);
-//=========================================================------------------------------------------------------
-	decodedBinary = 0x00220023; //writing into r0
+	instr = 0x21CD200F; //addi r13 r14 0x200f
+	setupTestI(cpu, mem, instr, 0x234, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	passed = (0x200f + 0x234);
+	mips_test_end_test(testId, passed, "ADDI = 0x2243");
 
-	testId = mips_test_begin_test("SUBU");
+	/*------------------------------------------------------------------*/
 
-	setregisters(cpu); //set the registers
+	testId = mips_test_begin_test("ADDI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	passed = test_subu(decodedBinary, cpu, mem, err);
+	instr = 0x21CDFF10; //addi r13 r14 0xFF10
+	setupTestI(cpu, mem, instr, 0x1234, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	passed = (0x200f -240);
+	mips_test_end_test(testId, passed, "ADDI = 4420");
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing SUBU(writing into r0)");
+	/*------------------------------------------------------------------*/
 
-	err = mips_cpu_reset(cpu);
-//SUB----------------------------------------------------------
-	decodedBinary = 0x00E92822; //no overflow
+	testId = mips_test_begin_test("ADDI");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	testId = mips_test_begin_test("SUB");
+	instr = 0x21CDFF10; //addi r13 r14 0xFF10
+	setupTestI(cpu, mem, instr, 0x80000000, 420, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 13, &result);
+	passed = (result == 420);
+	mips_test_end_test(testId, passed, "Overflow, Negative");
 
-	setregisters(cpu); //set the registers
+	/*------------------------------------------------------------------*/
 
-	passed = test_sub(decodedBinary, cpu, mem, err);
+	testId = mips_test_begin_test("ADDI");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing SUB (no overflow)");
+	instr = 0x21CD0001; //addi r13 r14 0x0001
+	setupTestI(cpu, mem, instr, 0x7FFFFFFF, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 13, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Overflow, Positive");
 
-	err = mips_cpu_reset(cpu);
-//=============================================================
-	decodedBinary = 0x00853022; //no overflow
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	testId = mips_test_begin_test("SUB");
+	testId = mips_test_begin_test("ADDIU");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
+	instr = 0x25CDFF10; //addiu r13 r14 0xFF10
+	setupTestI(cpu, mem, instr, 0x400, 420, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 13, &result);
+	passed = (result == 0x10310);
+	mips_test_end_test(testId, passed, "Answer = 0x10310");
 
-	passed = test_sub(decodedBinary, cpu, mem, err);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing SUB (no overflow)");
+	testId = mips_test_begin_test("ADDU");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	err = mips_cpu_reset(cpu);
-//=============================================================
-	decodedBinary = 0x00A61022; //overflow
+	instr = 0x02117821; //addu r15 r16 r17
+	setupTestR(cpu, mem, instr, 0x400, 420, 0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 15, &result);
+	passed = (result == (0x400 + 420));
+	mips_test_end_test(testId, passed, "Answer = 1444");
 
-	testId = mips_test_begin_test("SUB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sub(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing SUB (overflow)");
-
-	err = mips_cpu_reset(cpu);
-//=============================================================
-	decodedBinary = 0x00A31022; //overflow
-
-	testId = mips_test_begin_test("SUB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sub(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing SUB (overflow)");
-
-	err = mips_cpu_reset(cpu);
-//=============================================================
-	decodedBinary = 0x00220022; //writing in register 0
-
-	testId = mips_test_begin_test("SUB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sub(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing SUB (writing in register 0)");
-
-	err = mips_cpu_reset(cpu);
-
-	err = mips_cpu_reset(cpu);
-//AND-----------------------------------------------------------
-
-	decodedBinary = 0x00220024; //writing in register 0
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("AND");
 
-	setregisters(cpu); //set the registers
+	instr = 0x01AE6024; //and r12 r13 r14
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+	setupTestR(cpu, mem, instr, 0xFF00, 0xAAAA, 0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 12, &result);
+	passed = (result == (0xAA00));
+	mips_test_end_test(testId, passed, "Answer = 0xAA00");
 
-	passed = test_and(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing AND (writing in register 0)");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-
-	decodedBinary = 0x00833824; //writing in register 0
-
-	testId = mips_test_begin_test("AND");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_and(decodedBinary, cpu, mem, err);
-
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing AND");
-	err = mips_cpu_reset(cpu);
-	//OR--------------------------------------------------------
-
-	decodedBinary = 0x00280025; //writing in register 0
-
-	testId = mips_test_begin_test("OR");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_or(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing OR (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-
-	decodedBinary = 0x00283825; //
-
-	testId = mips_test_begin_test("OR");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_or(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing OR");
-	err = mips_cpu_reset(cpu);
-//XOR--------------------------------------------------------
-
-	decodedBinary = 0x00280026; //writing in register 0
-
-	testId = mips_test_begin_test("XOR");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_xor(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing XOR (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-
-	decodedBinary = 0x00283826; //
-
-	testId = mips_test_begin_test("XOR");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_xor(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing XOR");
-	err = mips_cpu_reset(cpu);
-//ADDIU--------------------------------------------------------
-
-	decodedBinary = 0x2420FFFF; //writing in register 0
-
-	testId = mips_test_begin_test("ADDIU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_addiu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ADDIU (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x2425FFFF; //writing in register 0
-
-	testId = mips_test_begin_test("ADDIU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_addiu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ADDIU (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//ADDI--------------------------------------------------------
-
-	decodedBinary = 0x2020FFFF; //writing in register 0
-
-	testId = mips_test_begin_test("ADDI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_addi(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ADDIU (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x2025FFFF; //writing in register 0
-
-	testId = mips_test_begin_test("ADDI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_addi(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ADDIU (no overflow)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x20278000; //writing in register 0
-
-	testId = mips_test_begin_test("ADDI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_addi(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ADDIU (no overflow)");
-	err = mips_cpu_reset(cpu);
-//ORI--------------------------------------------------------
-
-	decodedBinary = 0x34400194; //writing in register 0
-
-	testId = mips_test_begin_test("ORI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_ori(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ORI (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x34470194; //
-
-	testId = mips_test_begin_test("ORI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_ori(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ORI ");
-	err = mips_cpu_reset(cpu);
-//ANDI--------------------------------------------------------
-
-	decodedBinary = 0x30400194; //writing in register 0
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("ANDI");
 
-	setregisters(cpu); //set the registers
-
-	passed = test_andi(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing ANDI (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x30450194; //
-
-	testId = mips_test_begin_test("ANDI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_andi(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing ANDI ");
-	err = mips_cpu_reset(cpu);
-//XORI--------------------------------------------------------
-	decodedBinary = 0x38400194; //writing in register 0
-
-	testId = mips_test_begin_test("XORI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_xori(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing XORI (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x38450194; //
-
-	testId = mips_test_begin_test("XORI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_xori(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing XORI ");
-	err = mips_cpu_reset(cpu);
-//SLTU--------------------------------------------------------
-	decodedBinary = 0x0024002B; //writing in register 0
-
-	testId = mips_test_begin_test("SLTU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sltu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing sltu (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x0024282B; //
-
-	testId = mips_test_begin_test("SLTU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sltu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sltu ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x0081402B; //
-
-	testId = mips_test_begin_test("SLTU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sltu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sltu ");
-
-	err = mips_cpu_reset(cpu);
-
-//SLT--------------------------------------------------------
-	decodedBinary = 0x0024002A; //writing in register 0
-
-	testId = mips_test_begin_test("SLT");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_slt(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing slt (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x0024502A; //
-
-	testId = mips_test_begin_test("SLT");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_slt(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slt ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x0081402A; //
-
-	testId = mips_test_begin_test("SLT");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_slt(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slt ");
-
-	err = mips_cpu_reset(cpu);
-
-//SLTIU--------------------------------------------------------
-
-//========================================================
-	decodedBinary = 0x2C260200; //
-
-	testId = mips_test_begin_test("SLTIU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sltiu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sltiu ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x2C26FFFF; //
-
-	testId = mips_test_begin_test("SLTIU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sltiu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sltiu ");
-
-	err = mips_cpu_reset(cpu);
-
-//SLTI--------------------------------------------------------
-	decodedBinary = 0x28207FFF; //writing in register 0
-
-	testId = mips_test_begin_test("SLTI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_slti(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing slti (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x28267FFF; //
-
-	testId = mips_test_begin_test("SLTI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_slti(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slti ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x2826FFFF; //
-
-	testId = mips_test_begin_test("SLTI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_slti(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slti ");
-
-	err = mips_cpu_reset(cpu);
-
-//SLL--------------------------------------------------------
-	decodedBinary = 0x00020080; //writing in register 0
-
-	testId = mips_test_begin_test("SLL");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sll(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing sll(writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x00022880; //
-
-	testId = mips_test_begin_test("SLL");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sll(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sll ");
-
-	err = mips_cpu_reset(cpu);
-//SRL------========================================================
-	decodedBinary = 0x00020082; //
-
-	testId = mips_test_begin_test("SRL");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_srl(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing srl ");
-
-	err = mips_cpu_reset(cpu);
-//--------------------------------------------------------
-	decodedBinary = 0x00022882; //writing in register 0
-
-	testId = mips_test_begin_test("SRL");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_srl(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slti (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//SRA========================================================
-	decodedBinary = 0x00020083; //
-
-	testId = mips_test_begin_test("SRA");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sra(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing slti ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x00023883; //
-
-	testId = mips_test_begin_test("SRA");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sra(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slti ");
-
-	err = mips_cpu_reset(cpu);
-
-//SLLV--------------------------------------------------------
-	decodedBinary = 0x01820004; //writing in register 0
-
-	testId = mips_test_begin_test("SLLV");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sllv(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing sll(writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x01820804; //
-
-	testId = mips_test_begin_test("SLLV");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sllv(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sll ");
-
-	err = mips_cpu_reset(cpu);
-//SRLV------========================================================
-	decodedBinary = 0x01820006; //
-
-	testId = mips_test_begin_test("SRLV");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_srlv(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing srl ");
-
-	err = mips_cpu_reset(cpu);
-//--------------------------------------------------------
-	decodedBinary = 0x01820806; //writing in register 0
-
-	testId = mips_test_begin_test("SRLV");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_srlv(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slti (writing in register 0)");
-	err = mips_cpu_reset(cpu);
-//SRAV========================================================
-	decodedBinary = 0x01820007; //
-
-	testId = mips_test_begin_test("SRAV");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_srav(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing slti ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x01820807; //
-
-	testId = mips_test_begin_test("SRAV");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_srav(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing slti ");
-
-	err = mips_cpu_reset(cpu);
-//SW========================================================
-	decodedBinary = 0xAEEFFFFC; //
-
-	testId = mips_test_begin_test("SW");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sw(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sw ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0xAE2D0020; //
-
-	testId = mips_test_begin_test("SW");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sw(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sw ");
-
-	err = mips_cpu_reset(cpu);
-
-//LW========================================================
-	decodedBinary = 0x8EEFFFFC; //
-
-	testId = mips_test_begin_test("LW");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lw(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lw ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x8E2D0020; //
-
-	testId = mips_test_begin_test("LW");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lw(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lw ");
-
-	err = mips_cpu_reset(cpu);
-
-//========================================================
-	decodedBinary = 0x8E200020; //
-
-	testId = mips_test_begin_test("LW");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lw(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing lw(writing to r0) ");
-
-	err = mips_cpu_reset(cpu);
-
-//SB========================================================
-	decodedBinary = 0xA22DFFFC; //
-
-	testId = mips_test_begin_test("SB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sb(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sb ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0xA22D0020; //
-
-	testId = mips_test_begin_test("SB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sb(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sb ");
-
-	err = mips_cpu_reset(cpu);
-
-//LB========================================================
-	decodedBinary = 0x822D0020; //
-
-	testId = mips_test_begin_test("LB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lb(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lb ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x822DFFFC; //
-
-	testId = mips_test_begin_test("LB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lb(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lb ");
-
-	err = mips_cpu_reset(cpu);
-
-//========================================================
-	decodedBinary = 0x82200020; //
-
-	testId = mips_test_begin_test("LB");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lb(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing lb(writing to r0) ");
-
-	err = mips_cpu_reset(cpu);
-
-//SH========================================================
-	decodedBinary = 0xA6F30020; //
-
-	testId = mips_test_begin_test("SH");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sh(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sh ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0xA6F30020; //
-
-	testId = mips_test_begin_test("SH");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_sh(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing sh ");
-
-	err = mips_cpu_reset(cpu);
-
-//LH========================================================
-	decodedBinary = 0x86F30020; //
-
-	testId = mips_test_begin_test("LH");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lh(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lh ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x86F30020; //
-
-	testId = mips_test_begin_test("LH");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lh(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lh ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x86E00020; //
-
-	testId = mips_test_begin_test("LH");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lh(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing lh (writing to r0) ");
-
-	err = mips_cpu_reset(cpu);
-
-//LHU========================================================
-	decodedBinary = 0x96200020; //
-
-	testId = mips_test_begin_test("LHU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lhu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing lhu (writing to r0)");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x96270020; //
-
-	testId = mips_test_begin_test("LHU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lhu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lhu ");
-
-	err = mips_cpu_reset(cpu);
-
-//LB========================================================
-	decodedBinary = 0x92200020; //
-
-	testId = mips_test_begin_test("LBU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lbu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing lbu(writing to zero) ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x92280020; //
-
-	testId = mips_test_begin_test("LBU");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lbu(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lbu ");
-
-	err = mips_cpu_reset(cpu);
-
-//LUI========================================================
-	decodedBinary = 0x3C000200; //
-
-	testId = mips_test_begin_test("LUI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lui(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 0), "Testing lui(writing to zero) ");
-
-	err = mips_cpu_reset(cpu);
-//========================================================
-	decodedBinary = 0x3C060200; //
-
-	testId = mips_test_begin_test("LUI");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_lui(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing lui ");
-
-	err = mips_cpu_reset(cpu);
-
-//BQE========================================================
-	decodedBinary = 0x01AE7820; //
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+	instr = 0x3062AAAA; //andi r2 r3 0xaaaa
+	setupTestI(cpu, mem, instr, 0xFFFF, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_register(cpu, 2, &result);
+	passed = (result == (0xAAAA));
+	mips_test_end_test(testId, passed, "Answer = 0xAAAA");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("BEQ");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	setregisters(cpu); //set the registers
+	instr = 0x114B0010; //beq r10 r11 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x3, testId, PC, PCNEXT,debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BEQ
+	mips_cpu_step(cpu);
 
-	passed = test_beq(decodedBinary, cpu, mem, err);
+	err = mips_cpu_get_pc(cpu, &result);
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing beq ");
+	passed = (result == (PC+4)+64);
 
-	err = mips_cpu_reset(cpu);
+	mips_test_end_test(testId, passed, "branched");
 
-//BNE========================================================
-	decodedBinary = 0x01AE7820; //
+	/*------------------------------------------------------------------*/
 
-	testId = mips_test_begin_test("BNE");
+	testId = mips_test_begin_test("BEQ");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	setregisters(cpu); //set the registers
+	instr = 0x114B0010; //beq r10 r11 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x4, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BEQ
+	err = mips_cpu_get_pc(cpu, &result);
 
-	passed = test_bne(decodedBinary, cpu, mem, err);
+	passed = (result == PCNEXT);
+	mips_test_end_test(testId, passed, "Not branched");
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bne ");
-
-	err = mips_cpu_reset(cpu);
-
-//BGTZ========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("BGTZ");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_bgtz(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bbgtz ");
-
-	err = mips_cpu_reset(cpu);
-
-//BLEZ========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("BLEZ");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_blez(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing blez ");
-
-	err = mips_cpu_reset(cpu);
-
-//BGEZ========================================================
-	decodedBinary = 0x01AE7820; //
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("BGEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
+	instr = 0x05410010;// bgez r10 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZ
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_pc(cpu, &result);
 
-	passed = test_bgez(decodedBinary, cpu, mem, err);
+	passed = (result == (PC+4)+64);
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bbgez ");
+	mips_test_end_test(testId, passed, "BGEZ Branched");
 
-	err = mips_cpu_reset(cpu);
+	/*------------------------------------------------------------------*/
 
-//BLTZ========================================================
-	decodedBinary = 0x01AE7820; //
+	testId = mips_test_begin_test("BGEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	testId = mips_test_begin_test("BLTZ");
+	instr = 0x05410010;// bgez r10 0x10 branch by 64, less than zero so should not branch
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZ
+	err = mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_step(cpu);
+	err = mips_cpu_get_pc(cpu, &result);
 
-	setregisters(cpu); //set the registers
+	passed = (result == (PC+4));
 
-	passed = test_bltz(decodedBinary, cpu, mem, err);
+	mips_test_end_test(testId, passed, "BGEZ did not Branch");
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bltz ");
-
-	err = mips_cpu_reset(cpu);
-
-//BLTZAL========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("BLTZAL");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_bltzal(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bltzal ");
-
-	err = mips_cpu_reset(cpu);
-
-//BEQZAL========================================================
-	decodedBinary = 0x01AE7820; //
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("BGEZAL");
+	passed = 0;passed =
+			mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
 
-	passed = test_bgezal(decodedBinary, cpu, mem, err);
+	instr = 0x05D10010; //bgezal r14 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZAL
+	mips_cpu_step(cpu);
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing beqzal ");
+	err = mips_cpu_get_pc(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
 
-	err = mips_cpu_reset(cpu);
+	passed = ((result == (PC+4)+64) && (linkReg == (PCNEXT+4)));
+	mips_test_end_test(testId, passed, "BGEZAL branched and stored in Reg31");
 
-//J========================================================
-	decodedBinary = 0x01AE7820; //
+	/*------------------------------------------------------------------*/
 
-	testId = mips_test_begin_test("J");
+	testId = mips_test_begin_test("BGEZAL");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
 
-	passed = test_j(decodedBinary, cpu, mem, err);
+	instr = 0x05D10010; //bgezal r14 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT, debugLvl);
+	mips_cpu_set_register(cpu, 31, 0x0);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZAL
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing j");
+	passed = ((result == (PC+8)));
+	mips_test_end_test(testId, passed, "BGEZAL did not branch");
 
-	err = mips_cpu_reset(cpu);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-//JAL========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("JAL");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_jal(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing jal");
-
-	err = mips_cpu_reset(cpu);
-
-//JR========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("JR");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_jr(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing jr");
-
-	err = mips_cpu_reset(cpu);
-
-//JALR========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("JALR");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_jalr(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing jalr");
-
-	err = mips_cpu_reset(cpu);
-
-//BQENEG========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("BEQ");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_beqNeg(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing beq negative offset");
-
-	err = mips_cpu_reset(cpu);
-
-//BNENEG========================================================
-	decodedBinary = 0x01AE7820; //
-
-	testId = mips_test_begin_test("BNE");
-
-	setregisters(cpu); //set the registers
-
-	passed = test_bneNeg(decodedBinary, cpu, mem, err);
-
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bne negative offset");
-
-	err = mips_cpu_reset(cpu);
-
-//BGTZNEG========================================================
-	decodedBinary = 0x01AE7820; //
 
 	testId = mips_test_begin_test("BGTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
 
-	passed = test_bgtzNeg(decodedBinary, cpu, mem, err);
+	instr = 0x1DE00010; //bgtz r15 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGTZ
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bgtz negative offset");
+	passed = (result == (PC+4)+64);
+	mips_test_end_test(testId, passed, "BGTZ branched");
 
-	err = mips_cpu_reset(cpu);
+	/*------------------------------------------------------------------*/
 
-//BLEZNEG========================================================
-	decodedBinary = 0x01AE7820; //
+	testId = mips_test_begin_test("BGTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+
+
+	instr = 0x1DE00010; //bgtz r15 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGTZ
+
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+
+
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BGTZ did not branch because = 0");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BGTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+
+	passed =
+			instr = 0x1DE00010; //bgtz r15 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGTZ
+
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+
+
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BGTZ did not branch because negative");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
 
 	testId = mips_test_begin_test("BLEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
 
-	passed = test_blezNeg(decodedBinary, cpu, mem, err);
+	instr = 0x1A200010; //blez r17 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLEZ
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing blez negative offset");
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
 
-	err = mips_cpu_reset(cpu);
+	passed = (result == (PC+4)+64);
+	mips_test_end_test(testId, passed, "BLEZ branched since negative");
 
-//BGEZNEG========================================================
-	decodedBinary = 0x01AE7820; //
+	/*------------------------------------------------------------------*/
 
-	testId = mips_test_begin_test("BGEZ");
+	testId = mips_test_begin_test("BLEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
 
-	passed = test_bgezNeg(decodedBinary, cpu, mem, err);
+	instr = 0x1A200010; //blez r17 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLEZ
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bgez negative offset");
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
 
-	err = mips_cpu_reset(cpu);
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BLEZ did not branched");
 
-//BLTZNEG========================================================
-	decodedBinary = 0x01AE7820; //
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+
+
+	instr = 0x1A200010; //blez r17 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLEZ
+
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+
+	passed = (result == (PC+4)+64);
+	mips_test_end_test(testId, passed, "BLEZ branched since 0");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("BLTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	setregisters(cpu); //set the registers
 
-	passed = test_bltzNeg(decodedBinary, cpu, mem, err);
+	instr = 0x06600010; //bltz r19 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZ
 
-	mips_test_end_test(testId, (err == mips_Success) && (passed == 1), "Testing bltz negative offset");
-
-	err = mips_cpu_reset(cpu);
-
-
-
-    mips_test_end_suite();
-
-    mips_cpu_free(cpu);
-    mips_mem_free(mem);
-}
-
-int test_addu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-
-		uint32_t source1, source2, dest;
-
-		source1 = decodedBinary << 6;
-		source1 = source1 >> 27;
-
-		source2 = decodedBinary << 11;
-		source2 = source2 >> 27;
-
-		dest = decodedBinary << 16;
-		dest = dest >> 27;
-
-		uint8_t instr[4];
-
-		instr[0] = (decodedBinary >> 24) & 0xFF;
-		instr[1] = (decodedBinary >> 16) & 0xFF;
-		instr[2] = (decodedBinary >> 8) & 0xFF;
-		instr[3] = decodedBinary & 0xFF;
-
-		uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-		err = mips_cpu_get_pc(cpu, &pc);
-
-		err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-		mips_cpu_step(cpu); //call the main decode function
-
-		err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-		err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-		err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-
-		if(unsignedout == unsignedout1 + unsignedout2){
-		   return 1;
-		} else {
-		   return 0;
-		}
-}
-
-int test_add(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-		uint32_t source1, source2, dest;
-
-		source1 = decodedBinary << 6;
-		source1 = source1 >> 27;
-
-		source2 = decodedBinary << 11;
-		source2 = source2 >> 27;
-
-		dest = decodedBinary << 16;
-		dest = dest >> 27;
-
-		uint8_t instr[4];
-
-		instr[0] = (decodedBinary >> 24) & 0xFF;
-		instr[1] = (decodedBinary >> 16) & 0xFF;
-		instr[2] = (decodedBinary >> 8) & 0xFF;
-		instr[3] = decodedBinary & 0xFF;
-
-		uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-		err = mips_cpu_get_pc(cpu, &pc);
-
-		err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-		mips_cpu_step(cpu); //call the main decode function
-
-		err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-		err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-		err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-		int32_t signedout;
-
-		int32_t signedout1, signedout2;
-
-		signedout1 = (int32_t)unsignedout1;
-		signedout2 = (int32_t)unsignedout2;
-
-		signedout = (int32_t) unsignedout;
-
-		if(signedout == signedout1 + signedout2){
-			return 1;
-		}else{
-			return 0;
-		}
-}
-
-int test_subu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, dest;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	if(unsignedout == unsignedout1 - unsignedout2){
-	   return 1;
-	} else {
-	   return 0;
-	}
-}
-
-int test_sub(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, dest;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	int32_t signedout1, signedout2;
-
-	signedout1 = (int32_t)unsignedout1;
-	signedout2 = (int32_t)unsignedout2;
-
-	int32_t signedout = (int32_t) unsignedout;
-
-	if(signedout == signedout1 - signedout2){
-	   return 1;
-	} else {
-	   return 0;
-	}
-}
-
-int test_and(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-
-	uint32_t source1, source2, dest;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	if(unsignedout == (unsignedout1 & unsignedout2)){
-	   return 1;
-	} else {
-	   return 0;
-	}
-}
-
-int test_or(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-
-	uint32_t source1, source2, dest;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	if(unsignedout == (unsignedout1 | unsignedout2)){
-	   return 1;
-	} else {
-	   return 0;
-	}
-}
-
-int test_xor(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-
-	uint32_t source1, source2, dest;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	if(unsignedout == (unsignedout1 ^ unsignedout2)){
-	   return 1;
-	} else {
-	   return 0;
-	}
-}
-
-int test_addiu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	//cout << unsignedout << " " << unsignedout1 << " " << imm << endl;
-
-	if(unsignedout == imm + unsignedout1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_addi(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	int32_t signedout = (int32_t) unsignedout;
-    imm = (int16_t) imm;
-	int32_t imme = (int32_t)imm;
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	int32_t signedout1 = (int32_t) unsignedout1;
-
-	if(signedout == imme + signedout1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_ori(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	//cout << unsignedout << " " << unsignedout1 << " " << imm << endl;
-
-	if(unsignedout == (imm | unsignedout1)){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_andi(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	//cout << unsignedout << " " << unsignedout1 << " " << imm << endl;
-
-	if(unsignedout == (imm & unsignedout1)){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_xori(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	//cout << unsignedout << " " << unsignedout1 << " " << imm << endl;
-
-	if(unsignedout == (imm ^ unsignedout1)){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_sltu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2,shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	if(unsignedout1 < unsignedout2){
-		unsignedout1 = 1;
-	} else {
-		unsignedout1 = 0;
-	}
-
-	if(unsignedout == unsignedout1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_slt(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	int32_t signedout = (int32_t)unsignedout;
-	int32_t signedout1 = (int32_t)unsignedout1;
-	int32_t signedout2 = (int32_t)unsignedout2;
-
-	if(signedout1 < signedout2){
-		signedout1 = 1;
-	} else {
-		signedout1 = 0;
-	}
-
-	if(signedout1 == signedout){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_sltiu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-
-	if(unsignedout1 < imm){
-		unsignedout1 = 1;
-	} else {
-		unsignedout1 = 0;
-	}
-
-	if(unsignedout1 == unsignedout){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_slti(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	if((int32_t)unsignedout1 < (int32_t)(int16_t)imm){
-		unsignedout1 = 1;
-	} else {
-		unsignedout1 = 0;
-	}
-
-	if(unsignedout1 == unsignedout){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_sll(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-
-
-	if(unsignedout == unsignedout2 << shift){
-		return 1;
-	}else{
-		return 0;
-	}
-}
-
-int test_srl(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-
-
-	if(unsignedout == unsignedout2 >> shift){
-		return 1;
-	}else{
-		return 0;
-	}
-}
-
-int test_sllv(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-
-
-	if(unsignedout == unsignedout2 << unsignedout1){
-		return 1;
-	}else{
-		return 0;
-	}
-}
-
-int test_srlv(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-
-
-	if(unsignedout == unsignedout2 >> unsignedout1){
-		return 1;
-	}else{
-		return 0;
-	}
-}
-
-int test_sra(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	int32_t signedout = (int32_t)unsignedout;
-	int32_t signedout1 = (int32_t)unsignedout1;
-	int32_t signedout2 = (int32_t)unsignedout2;
-
-	if(signedout == signedout2 >> shift){
-		return 1;
-	}else{
-		return 0;
-	}
-}
-
-int test_srav(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, source2, shift, dest, pc, unsignedout, unsignedout1, unsignedout2;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	source2 = decodedBinary << 11;
-	source2 = source2 >> 27;
-
-	dest = decodedBinary << 16;
-	dest = dest >> 27;
-
-	if(dest == 0){
-		return 0;
-	}
-
-	shift = decodedBinary << 21;
-	shift = shift >> 27;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout);
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, source2, &unsignedout2);
-
-	int32_t signedout = (int32_t)unsignedout;
-	int32_t signedout1 = (int32_t)unsignedout1;
-	int32_t signedout2 = (int32_t)unsignedout2;
-
-	if(signedout == signedout2 >> signedout1){
-		return 1;
-	}else{
-		return 0;
-	}
-}
-
-int test_sw(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (int32_t)(int16_t)imm;
-
-	mips_mem_read(mem, unsignedout1, 4, buffer);
-
-	unsignedout1 = to_big(buffer);
-
-	if(unsignedout1 == unsignedout2){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_lw(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (int32_t)(int16_t)imm;
-
-
-
-	err = mips_mem_read(mem, unsignedout1, 4, buffer);
-
-	unsignedout1 = to_big(buffer);
-	//cout << unsignedout1 << " " << unsignedout2 <<  endl;
-	if(unsignedout1 == unsignedout2){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_sb(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (int32_t)(int16_t)imm;
-
-	//cout << unsignedout1 << " " << imm <<  endl;
-
-	uint8_t read;
-
-	err = mips_mem_read(mem, unsignedout1, 1, &read);
-
-	//cout << unsignedout1 << " " << (int32_t)(int16_t)imm << endl;
-
-	//cout << (uint32_t)read << " " << unsignedout2 << endl;
-	if(read == unsignedout2){
-		return 1;
-	} else {
-		return 0;
-	}
-
-}
-
-int test_lb(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (int32_t)(int16_t)imm;
-
-	//cout << unsignedout1 << " " << imm <<  endl;
-
-	uint8_t read;
-
-	err = mips_mem_read(mem, unsignedout1, 1, &read);
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	if(unsignedout2 == (uint32_t)read){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_sh(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (int32_t)(int16_t)imm;
-
-	uint8_t buff[2];
-
-	mips_mem_read(mem, unsignedout1, 2, buff);
-
-	unsignedout1 = to_big16(buff);
-
-	//unsignedout2 = unsignedout2 << 16;
-//	unsignedout2 = unsignedout2 >> 16;
-
-	//cout << "sh" << unsignedout1 << " " << unsignedout2 << endl;
-
-	if(unsignedout1 == unsignedout2){
-		return 1;
-	} else {
-		return 0;
-	}
-
-}
-
-int test_lh(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (int32_t)(int16_t)imm;
-
-	//cout << unsignedout1 << " " << imm <<  endl;
-
-	uint8_t buff[2];
-
-	mips_mem_read(mem, unsignedout1, 2, buff);
-
-	unsignedout1 = to_big16(buff);
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	unsignedout2 = unsignedout2 << 16;
-	unsignedout2 = unsignedout2 >> 16;
-
-	//cout << "lh" << unsignedout1 << " " << unsignedout2 << endl;
-
-	if(unsignedout2 == unsignedout1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_lhu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (uint32_t)imm;
-
-	//cout << unsignedout1 << " " << imm <<  endl;
-
-	uint8_t buff[2];
-
-	mips_mem_read(mem, unsignedout1, 2, buff);
-
-	unsignedout1 = to_big16(buff);
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	unsignedout2 = unsignedout2 << 16;
-	unsignedout2 = unsignedout2 >> 16;
-
-	//cout << "lh" << unsignedout1 << " " << unsignedout2 << endl;
-
-	if(unsignedout2 == unsignedout1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_lbu(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, source1, &unsignedout1);
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	unsignedout1 += (uint32_t)imm;
-
-	//cout << unsignedout1 << " " << imm <<  endl;
-
-	uint8_t read;
-
-	err = mips_mem_read(mem, unsignedout1, 1, &read);
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout2);
-
-	if(unsignedout2 == (uint32_t)read){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_lui(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-
-
-	uint8_t instr[4];
-	uint8_t buffer[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc, unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, pc, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu); //call the main decode function
-
-	err = mips_cpu_get_register(cpu, dest, &unsignedout1);
-
-	if(imm == unsignedout1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_beq(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x124F0024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-///////////////////////////////////////////////////////
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-//	cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-// FF9C
-}
-
-int test_bne(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x173A0024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_bgtz(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x1E800024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_blez(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x18400024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_bgez(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x06810024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_bltz(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x04400024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_bgezal(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x06910024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-	///////////////////////////////////////////////////////////////////////////
-		decodedBinary = 0x8C01012C;
-
-		source1 = decodedBinary << 6;
-		source1 = source1 >> 27;
-
-		dest = decodedBinary << 11;
-		dest = dest >> 27;
-
-		imm = decodedBinary << 16;
-		imm = imm >> 16;
-
-
-
-		instr[0] = (decodedBinary >> 24) & 0xFF;
-		instr[1] = (decodedBinary >> 16) & 0xFF;
-		instr[2] = (decodedBinary >> 8) & 0xFF;
-		instr[3] = decodedBinary & 0xFF;
-
-
-
-		err = mips_cpu_get_pc(cpu, &pc);
-		//cout << pc << endl;
-		err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_cpu_get_register(cpu, 31, &unsignedout);
-	err = mips_cpu_set_pc(cpu, unsignedout);
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_bltzal(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x04500024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-/////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-	///////////////////////////////////////////////////////////////////////////
-		decodedBinary = 0x8C01012C;
-
-		source1 = decodedBinary << 6;
-		source1 = source1 >> 27;
-
-		dest = decodedBinary << 11;
-		dest = dest >> 27;
-
-		imm = decodedBinary << 16;
-		imm = imm >> 16;
-
-
-
-		instr[0] = (decodedBinary >> 24) & 0xFF;
-		instr[1] = (decodedBinary >> 16) & 0xFF;
-		instr[2] = (decodedBinary >> 8) & 0xFF;
-		instr[3] = decodedBinary & 0xFF;
-
-
-
-		err = mips_cpu_get_pc(cpu, &pc);
-		//cout << pc << endl;
-		err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, 31, &unsignedout);
-	err = mips_cpu_set_pc(cpu, unsignedout);
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_j(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x08000026;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-	//cout << unsignedout << " " << unsignedout1 << endl;
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_jal(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x0C000026;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-/////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x8C01012C;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, 31, &unsignedout);
-	err = mips_cpu_set_pc(cpu, unsignedout);
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
+	mips_cpu_get_pc(cpu, &result);
 
+	passed = (result == (PCNEXT)+64);
+	mips_test_end_test(testId, passed, "BLTZ branched since negative");
 
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
+	/*------------------------------------------------------------------*/
 
-int test_jr(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
+	testId = mips_test_begin_test("BLTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	instr = 0x06600010; //bltz r19 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZ
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x03C00008;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-
-	decodedBinary = 0x016C5020;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-	//cout << unsignedout << " " << unsignedout1 << endl;
-
-	if(unsignedout == 5 and unsignedout1 == 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_jalr(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm, destt;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-
-
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x03C0E809;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	destt = decodedBinary << 16;
-	destt = destt >> 27;
-
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
+	mips_cpu_get_pc(cpu, &result);
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	passed = (result == (PCNEXT + 4));
+	mips_test_end_test(testId, passed, "BLTZ did not branched since 0");
 
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
+	/*------------------------------------------------------------------*/
 
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	testId = mips_test_begin_test("BLTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	instr = 0x06600010; //bltz r19 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZ
 
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-
-/////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016C5020;
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x8C01012C;
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	cout << pc << endl;
-	err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
-
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-		cout << unsignedout2 << endl;
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	cout << pc << endl;
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, destt, &unsignedout);
-	cout << unsignedout << endl;
-	err = mips_cpu_set_pc(cpu, unsignedout);
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-	cout << unsignedout2 << endl;
-
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_beqNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x124F0024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
-
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-///////////////////////////////////////////////////////
-
-	decodedBinary = 0x135BFFDC;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-/////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 156, 4, instr); //read the instruction binary
+	mips_cpu_get_pc(cpu, &result);
 
-///////////////////////////////////////////////////////////////////////////
-		decodedBinary = 0x8C01012C;
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BLTZ branched since 0");
 
-		source1 = decodedBinary << 6;
-		source1 = source1 >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-		dest = decodedBinary << 11;
-		dest = dest >> 27;
+	testId = mips_test_begin_test("BLTZAL");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
-		imm = decodedBinary << 16;
-		imm = imm >> 16;
 
-		instr[0] = (decodedBinary >> 24) & 0xFF;
-		instr[1] = (decodedBinary >> 16) & 0xFF;
-		instr[2] = (decodedBinary >> 8) & 0xFF;
-		instr[3] = decodedBinary & 0xFF;
+	instr = 0x06B00010; //bltzal r21 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZAL
 
-		err = mips_cpu_get_pc(cpu, &pc);
-		//cout << pc << endl;
-		err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
-
-
-
-
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-
-
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
-
-
-
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_bneNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-	uint8_t instr[4];
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x124F0024;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
+	mips_cpu_get_pc(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
 
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = ((result == (PCNEXT)+64) && (linkReg == (PCNEXT+4)));
+	mips_test_end_test(testId, passed, "BLTZAL branched and stored in Reg31");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("BLTZAL");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = 0x06B00010; //bltzal r21 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_set_register(cpu, 31, 420);
+	mips_cpu_step(cpu); //Does BLTZAL
 
-
-
-	err = mips_cpu_get_pc(cpu, &pc);
-
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-///////////////////////////////////////////////////////
-
-	decodedBinary = 0x173BFFDC;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
-
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-
-
-
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
-
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-/////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
-
-
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
-
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
 
+	passed = ((result == (PCNEXT+4)) && (linkReg == 420));
+	mips_test_end_test(testId, passed, "BLTZAL did not branch, 420 stored in Reg31");
 
+	/*------------------------------------------------------------------*/
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	testId = mips_test_begin_test("BLTZAL");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
 
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	instr = 0x06B00010; //bltzal r21 0x10
+	setupTestI(cpu, mem, instr, 0x2, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_set_register(cpu, 31, 690);
+	mips_cpu_step(cpu); //Does BLTZAL
 
-	err = mips_mem_write(mem, 156, 4, instr); //read the instruction binary
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
 
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x8C01012C;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = ((result == (PCNEXT+4)) && (linkReg == 690));
+	mips_test_end_test(testId, passed, "BLTZAL did not branch, 690 stored in Reg31");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("BNE");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = 0x152A0010; //bne r9 r10 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x3, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BNE
+	mips_cpu_step(cpu);
+	mips_cpu_get_pc(cpu, &result);
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
+	passed = (result == PCNEXT+4);
 
+	mips_test_end_test(testId, passed, "branched");
 
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("BNE");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+	instr = 0x152A0010; //bne r9 r10 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x4, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BEQ
+	err = mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+	mips_cpu_get_pc(cpu, &result);
 
+	passed = (result == (PCNEXT)+64);
+	mips_test_end_test(testId, passed, "Not branched");
 
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+	/*---------------------------------GOOD-----------------------------*/
+	/*----------------------------------SIR-----------------------------*/
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
+	instr = 0xAAFFBBCC; //Test Value
+	writeInstrToMem(cpu, mem, 4000, instr); //Store Test Value in Mem at 4000
+	instr = 0x01220BCC; //Test Value
+	writeInstrToMem(cpu, mem, 4004, instr); //Store Test Value in Mem at 4004
 
-int test_bgtzNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
+	testId = mips_test_begin_test("LB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	instr = 0x81EE0010; //lb r14 0x10 r15
+	setupTestI(cpu, mem, instr, 3984, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	passed = (result == 0xFFFFFFAA);
+	mips_test_end_test(testId, passed, "Loaded 0xFFFFFFAA");
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	/*------------------------------------------------------------------*/
 
-	uint8_t instr[4];
+	testId = mips_test_begin_test("LB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = 0x81EEFFFE; //lb r14 0x10 r15
+	setupTestI(cpu, mem, instr, 4006, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
+	passed = (result == 0x01);
+	mips_test_end_test(testId, passed, "Loaded 0x01");
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x124F0024;
+	testId = mips_test_begin_test("LBU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	instr = 0x91EE0001; //lbu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4000, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+	passed = (result == 0xFF);
+	mips_test_end_test(testId, passed, "Loaded 0xFF");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
+	testId = mips_test_begin_test("LBU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = 0x91EEFFFE; //lbu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4009, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	passed = (result == 0xCC);
+	mips_test_end_test(testId, passed, "Loaded 0xCC");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("LH");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	instr = 0x85EE0001; //lh r14 0x1 r15
+	setupTestI(cpu, mem, instr, 3999, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
+	passed = (result == 0xFFFFAAFF);
+	mips_test_end_test(testId, passed, "Loaded 0xFFFFAAFF");
 
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	/*------------------------------------------------------------------*/
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	testId = mips_test_begin_test("LH");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	instr = 0x85EEFFFF; //lh r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4007, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	passed = (result == 0x0BCC);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	testId = mips_test_begin_test("LHU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = 0x95EE0001; //lhu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 3999, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
+	passed = (result == 0xAAFF);
+	mips_test_end_test(testId, passed, "Loaded 0xAAFF");
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	/*------------------------------------------------------------------*/
+	testId = mips_test_begin_test("LHU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-///////////////////////////////////////////////////////
+	instr = 0x95EE0001; //lhu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
-	decodedBinary = 0x1F40FFDC;
+	passed = (result == 0x0BCC);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	testId = mips_test_begin_test("LUI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	instr = 0x3C0E0001; //lui r14 0x1
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
+	passed = (result == 0x10000);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
 
+	/*------------------------------------------------------------------*/
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	testId = mips_test_begin_test("LUI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-/////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	instr = 0x3C0EF001; //lui r14 0x1
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
+	passed = (result == 0xF0010000);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	testId = mips_test_begin_test("LW");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	instr = 0x8DEE0001; //lw r14 0x1 r15
+	setupTestI(cpu, mem, instr, 3999, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	passed = (result == 0xAAFFBBCC);
+	mips_test_end_test(testId, passed, "Loaded 0xAAFFBBCC");
 
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("LW");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = 0x8DEEFFFF; //lw r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
 
+	passed = (result == 0x01220BCC);
+	mips_test_end_test(testId, passed, "Loaded 0x01220BCC");
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	err = mips_mem_write(mem, 156, 4, instr); //read the instruction binary
+	testId = mips_test_begin_test("MFHI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x8C01012C;
+	instr = 0x0000A010; //mfhi r20
+	setupTestR(cpu, mem, instr, 0x0, 0x0, 300, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 20, &result);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Loaded MFHI");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("MFLO");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = 0x0000A812; //mflo r21
+	setupTestR(cpu, mem, instr, 0x0, 0x0, 420, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 21, &result);
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Loaded MFLO");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("MTHI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	mips_cpu_set_register(cpu, 20, 1000);
 
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+	instr = 0x02A00011; //mthi r21
+	setupTestR(cpu, mem, instr, 420, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+
+	instr = 0x0000A010; //mfhi r20
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+	mips_cpu_get_register(cpu, 20, &result);
 
+	passed = (result == 420);
+	mips_test_end_test(testId, passed, "HI was set to 420");
 
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("MTLO");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	mips_cpu_set_register(cpu, 20, 1000);
 
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
+	instr = 0x02800013; //mtlo r20
+	setupTestR(cpu, mem, instr, 420690, 0x0, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-int test_blezNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
+	instr = 0x0000A812; //mflo r21
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 20, &result);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = (result == 420690);
+	mips_test_end_test(testId, passed, "LO was set to 420690");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("OR");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	uint8_t instr[4];
+	instr = 0x00430825; //or r1 r2 r3
+	setupTestR(cpu, mem, instr, 0b10101010, 0b00001111, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	mips_cpu_get_register(cpu, 1, &result);
 
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
+	passed = (result == 0b10101111);
+	mips_test_end_test(testId, passed, "Or = 0b10101111");
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x124F0024;
+	testId = mips_test_begin_test("ORI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	instr = 0x3441AAAA; //ori r1 r2 0xffff
+	setupTestI(cpu, mem, instr, 0xFFFF0000, 0b0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	mips_cpu_get_register(cpu, 1, &result);
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
+	passed = (result == 0xFFFFAAAA);
+	mips_test_end_test(testId, passed, "Ori = 0b10101010");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	testId = mips_test_begin_test("SB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = 0xA3590001; //sb r25 0x1 r26
+	setupTestI(cpu, mem, instr, 3500, 0xFF, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	instr = 0x837C0001; //lb r28 0x1 r27
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	setupTestI(cpu, mem, instr, 3500, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	mips_cpu_get_register(cpu, 28, &result);
 
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
+	passed = (result == 0xFFFFFFFF); //Because using LB not LBU to check
+	mips_test_end_test(testId, passed, "Wrote 0xFF to memory address 3501");
 
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	/*------------------------------------------------------------------*/
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	testId = mips_test_begin_test("SB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	instr = 0xA359FFFF; //sb r25 0x1 r26
+	setupTestI(cpu, mem, instr, 3500, 0xFF, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	instr = 0x937C0001; //lbU r28 0x1 r27
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	setupTestI(cpu, mem, instr, 3498, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 28, &result);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	passed = (result == 0xFF);
+	mips_test_end_test(testId, passed,"Wrote 0xFF to memory address 3499");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SH");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	instr = 0xA77C0001; //sh r28 0x1 r27
+	setupTestI(cpu, mem, instr, 3503, 0xFFAA, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-///////////////////////////////////////////////////////
+	instr = 0x97DD0001; //lhU r29 0x1 r30
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	setupTestI(cpu, mem, instr, 3503, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	decodedBinary = 0x1840FFDC;
+	mips_cpu_get_register(cpu, 29, &result);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = (result == 0xFFAA);
+	mips_test_end_test(testId, passed, "Wrote 0xFFAA to memory address 3504");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("SH");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = 0xA77CFFFF; //sh r28 0x1 r27
+	setupTestI(cpu, mem, instr, 3505, 0xAAFF, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	instr = 0x97DD0001; //lhU r29 0x1 r30
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	setupTestI(cpu, mem, instr, 3503, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	mips_cpu_get_register(cpu, 29, &result);
+	passed = (result == 0xAAFF);
+	mips_test_end_test(testId, passed, "Wrote 0xAAFF to memory address 3504");
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-/////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SH");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = 0xA77C0001; //sh r28 0x1 r27
+	setupTestI(cpu, mem, instr, 3506, 0xAAFF, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = (err == mips_ExceptionInvalidAddress);
+	mips_test_end_test(testId, passed, "Invalid Address");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("SLL");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x0 << 0);
+	setupTestR(cpu, mem, instr, 0x0, 0b1010, 0b1, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 15, &result);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	passed = (result == 0b101000);
+	mips_test_end_test(testId, passed, "Result was: 0b101000");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	testId = mips_test_begin_test("SLL");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_mem_write(mem, 156, 4, instr); //read the instruction binary
+	instr = (0ul << 26) | (10ul << 21) | (11ul << 16) | (12ul) << 11 | (0ul << 6) | (0x4 << 0);
+	setupTestR(cpu, mem, instr, 4, 0b10101010, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x8C01012C;
+	err = mips_cpu_get_register(cpu, 12, &result);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = (result == 0xAA0);
+	mips_test_end_test(testId, passed, "Result was 0b101010100000");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, -60, 780, 420, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
+	err = mips_cpu_get_register(cpu, 18, &result);
 
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
 
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, 6000, -780, 420, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
 
+	err = mips_cpu_get_register(cpu, 18, &result);
 
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
 
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, -6000, -780, 420, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-int test_bgezNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
+	err = mips_cpu_get_register(cpu, 18, &result);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	uint8_t instr[4];
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, 6000, 780, 420, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	err = mips_cpu_get_register(cpu, 18, &result);
 
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x124F0024;
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	instr = 0x296A0100; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, 200, 400, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = 0x296A0100; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, 300, 400, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
 
+	/*------------------------------------------------------------------*/
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
+	instr = 0x296AFFFF; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, 300, 400, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	/*------------------------------------------------------------------*/
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	instr = 0x296AFFFF; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, -200, 400, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was False");
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLTIU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = (0b001011 << 26) | (16ul << 21) | (17ul << 16) | (0x00FF << 0);
+	setupTestI(cpu, mem, instr, 1, 400, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	mips_cpu_get_register(cpu, 17, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
 
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-///////////////////////////////////////////////////////
+	/*------------------------------------------------------------------*/
 
-	decodedBinary = 0x0621FFDC;
+	testId = mips_test_begin_test("SLTIU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	instr = (0b001011 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFF << 0);
+	setupTestI(cpu, mem, instr, 0xFFFFF, 400, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	mips_cpu_get_register(cpu, 17, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLTU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2B << 0);
+	setupTestR(cpu, mem, instr, 60, 780, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	mips_cpu_get_register(cpu, 18, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-/////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLTU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2B << 0);
+	setupTestR(cpu, mem, instr, 0xF000000FF, 1, 0x20, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	mips_cpu_get_register(cpu, 18, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was True");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("SRA");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x3 << 0);
+	setupTestR(cpu, mem, instr, 0, 0x80000000, 1, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 15, &result);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	passed = (result == 0xE0000000);
+	mips_test_end_test(testId, passed, "Result was: 0xE0000000");
 
+	/*------------------------------------------------------------------*/
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	testId = mips_test_begin_test("SRA");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_mem_write(mem, 156, 4, instr); //read the instruction binary
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x3 << 0);
+	setupTestR(cpu, mem, instr, 0, 0x7FFFFFFF, 1, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x8C01012C;
+	mips_cpu_get_register(cpu, 15, &result);
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	passed = (result == 0x1FFFFFFF);
+	mips_test_end_test(testId, passed, "Result was: 0x1FFFFFFF");
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	testId = mips_test_begin_test("SRAV");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	instr = (0ul << 26) | (13ul << 21) | (14ul << 16) | (15ul << 11) | (0ul << 6) | (0x7 << 0);
+	setupTestR(cpu, mem, instr, 1, 0x80000000, 0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
+	mips_cpu_get_register(cpu, 15, &result);
 
+	passed = (result == 0xC0000000);
+	mips_test_end_test(testId, passed, "Result was: 0xC0000000");
 
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SRAV");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+	instr = (0ul << 26) | (13ul << 21) | (14ul << 16) | (15ul << 11) | (0ul << 6) | (0x7 << 0);
+	setupTestR(cpu, mem, instr, 1, 0x7FFFFFFF, 0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
 
+	mips_cpu_get_register(cpu, 15, &result);
 
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
+	passed = (result == 0x3FFFFFFF);
+	mips_test_end_test(testId, passed, "Result was: 0xC0000000");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SRL");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-int test_bltzNeg(uint32_t decodedBinary, mips_cpu_h cpu, mips_mem_h mem, mips_error &err){
-	uint32_t source1, dest, imm;
-
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x2 << 0);
+	setupTestR(cpu, mem, instr, 0, 0b11111111, 0b1, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	mips_cpu_get_register(cpu, 15, &result);
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	passed = (result == 0b111111);
+	mips_test_end_test(testId, passed, "Result was: 0b111111");
 
-	uint8_t instr[4];
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	testId = mips_test_begin_test("SRLV");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	uint32_t unsignedout, pc,unsignedout1, unsignedout2;
+	instr = (0ul << 26) | (10ul << 21) | (11ul << 16) | (12ul) << 11 | (0ul << 6) | (0x6 << 0);
+	setupTestR(cpu, mem, instr, 4, 0b10101010, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	mips_cpu_get_register(cpu, 12, &result);
 
-	err = mips_mem_write(mem, 0, 4, instr); //read the instruction binary
-//////////////////////////////////////////////////
-	decodedBinary = 0x124F0024;
+	passed = (result == 0b1010);
+	mips_test_end_test(testId, passed, "Result was 0b1010");
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
-	int32_t imme = (int16_t) imm << 2;
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, 100, 60, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 3, &result);
+	passed = (result == 100-60);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	mips_test_end_test(testId, passed, "Result was: 40");
 
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, -100, -60, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	err = mips_mem_write(mem, 4, 4, instr); //read the instruction binary
+	mips_cpu_get_register(cpu, 3, &result);
+	passed = (result == -40);
 
-///////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	mips_test_end_test(testId, passed, "Result was: -40");
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	/*------------------------------------------------------------------*/
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, 0x7FFFFFFF, 0x80000000, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
 
+	passed = (err == mips_ExceptionArithmeticOverflow);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
 
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, 0x80000000, 0x1, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
 
-	err = mips_mem_write(mem, 8, 4, instr); //read the instruction binary
-///////////////////////////////////////////////////////
+	passed = (err == mips_ExceptionArithmeticOverflow);
 
-	decodedBinary = 0x0440FFDC;
+	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	testId = mips_test_begin_test("SUBU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	instr = (0ul << 26) | (13ul << 21) | (14ul << 16) | (15ul << 11) | (0ul << 6) | (0x23 << 0);
+	setupTestR(cpu, mem, instr, 100, 60, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 15, &result);
+	passed = (result == 40);
+	mips_test_end_test(testId, passed, "Result was: 40");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	testId = mips_test_begin_test("SW");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 152, 4, instr); //read the instruction binary
-/////////////////////////////////////////////////////////////////
-	decodedBinary = 0x016A9822;
+	instr = 0xAE110004;
+	setupTestI(cpu, mem, instr, 3516, 50000, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_mem_read(mem, 3520, 4, buffer);
+	result = littleToBigEnd(buffer);
 
+	passed = (result == 50000);
+	mips_test_end_test(testId, passed, "Result: 50000, was written to 3520");
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	/*------------------------------------------------------------------*/
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	testId = mips_test_begin_test("SW");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	instr = 0xAE11FFFC;
+	setupTestI(cpu, mem, instr, 3516, 60000, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_mem_read(mem, 3512, 4, buffer);
+	result = littleToBigEnd(buffer);
 
+	passed = (result == 60000);
+	mips_test_end_test(testId, passed, "Result: 60000, was written to 3512");
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SW");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	err = mips_cpu_get_pc(cpu, &pc);
+	instr = 0xAE110001;
+	setupTestI(cpu, mem, instr, 3516, 60000, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
 
-	err = mips_mem_write(mem, 156, 4, instr); //read the instruction binary
+	passed = (err = mips_ExceptionInvalidAlignment);
+	mips_test_end_test(testId, passed, "Result: mips_ExceptionInvalidAlignment");
 
-///////////////////////////////////////////////////////////////////////////
-	decodedBinary = 0x8C01012C;
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
-	source1 = decodedBinary << 6;
-	source1 = source1 >> 27;
+	testId = mips_test_begin_test("XOR");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
-	dest = decodedBinary << 11;
-	dest = dest >> 27;
+	instr = (0ul << 26) | (7ul << 21) | (8ul << 16) | (9ul) << 11 | (0ul << 6) | (0x26 << 0);
+	setupTestR(cpu, mem, instr, 0b00001111, 0b10101010, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
-	imm = decodedBinary << 16;
-	imm = imm >> 16;
+	mips_cpu_get_register(cpu, 9, &result);
 
-	instr[0] = (decodedBinary >> 24) & 0xFF;
-	instr[1] = (decodedBinary >> 16) & 0xFF;
-	instr[2] = (decodedBinary >> 8) & 0xFF;
-	instr[3] = decodedBinary & 0xFF;
+	passed = (result == 0b10100101);
+	mips_test_end_test(testId, passed, "Result was: 0b10100101");
 
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	err = mips_mem_write(mem, 12, 4, instr); //read the instruction binary
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("XORI");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
 
+	instr = (0b001110 << 26) | (16ul << 21) | (17ul << 16) | (0xAAAF << 0);
+	setupTestI(cpu, mem, instr, 0xFFFF0000, 0x0, testId, PC, PCNEXT, debugLvl);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 17, &result);
 
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
-	mips_cpu_step(cpu);
-	err = mips_cpu_get_pc(cpu, &pc);
-	//cout << pc << endl;
+	passed = (result == 0xFFFFAAAF);
+	mips_test_end_test(testId, passed, "Result was: 0xFFFFAAAF");
 
 
-	err = mips_cpu_get_register(cpu, 10, &unsignedout);
-	err = mips_cpu_get_register(cpu, 19, &unsignedout1);
-	err = mips_cpu_get_register(cpu, 1, &unsignedout2);
 
 
+	mips_test_end_suite();
 
-	if(unsignedout2 == 0){
-		return 1;
-	} else {
-		return 0;
-	}
 }
 
 
 
 
-void setregisters(mips_cpu_h state){
-	mips_error err;
-	err = mips_cpu_set_register(state, 1, 0xf9da6b6c);
-	err = mips_cpu_set_register(state, 2, 0xffffffff);
-	err = mips_cpu_set_register(state, 3, 0x00000001);
-	err = mips_cpu_set_register(state, 4, 0x8fffffff);
-	err = mips_cpu_set_register(state, 5, 0x80000000);
-	err = mips_cpu_set_register(state, 6, 0x7FFFFFFF);
-	err = mips_cpu_set_register(state, 7, 0x2085E449);
-	err = mips_cpu_set_register(state, 8, 0x7a14f5fa);
-	err = mips_cpu_set_register(state, 9, 0x2b00f3ef);
-	err = mips_cpu_set_register(state, 10, 1);
-	err = mips_cpu_set_register(state, 11, 2);
-	err = mips_cpu_set_register(state, 12, 3);
-	err = mips_cpu_set_register(state, 13, 4);
-	err = mips_cpu_set_register(state, 14, 5);
-	err = mips_cpu_set_register(state, 15, 6);
-	err = mips_cpu_set_register(state, 16, 7);
-	err = mips_cpu_set_register(state, 17, 8);
-	err = mips_cpu_set_register(state, 18, 9);
-	err = mips_cpu_set_register(state, 19, 10);
-	err = mips_cpu_set_register(state, 20, 0x2a702d28);
-	err = mips_cpu_set_register(state, 21, 0x51e9a5ec);
-	err = mips_cpu_set_register(state, 22, 0x75187d19);
-	err = mips_cpu_set_register(state, 23, 16);
-	err = mips_cpu_set_register(state, 24, 0x95d50e0c);
-	err = mips_cpu_set_register(state, 25, 0xbae741e3);
-	err = mips_cpu_set_register(state, 26, 0x3596cf7f);
-	err = mips_cpu_set_register(state, 27, 0x3596cf7f);
-	err = mips_cpu_set_register(state, 28, 0x097e98da);
-	err = mips_cpu_set_register(state, 29, 0xc1409114);
-	err = mips_cpu_set_register(state, 30, 152);
-	err = mips_cpu_set_register(state, 31, 0x02c99aa9);
-}
 
 
-uint32_t to_big(const uint8_t *pData){
-    return
-        (((uint32_t)pData[0])<<24)
-        |
-        (((uint32_t)pData[1])<<16)
-        |
-        (((uint32_t)pData[2])<<8)
-        |
-        (((uint32_t)pData[3])<<0);
-}
 
-uint32_t to_big16(const uint8_t *pData){
-    return
-        (((uint32_t)0x00)<<24)
-        |
-        (((uint32_t)0x00)<<16)
-        |
-        (((uint32_t)pData[0])<<8)
-        |
-        (((uint32_t)pData[1])<<0);
-}
+
+
+
+
+
+
+
+
