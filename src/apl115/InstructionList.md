@@ -46,12 +46,12 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 42|SLTI  |  Set on less than immediate (signed)      | 3  XXX      | YES | | YES
 43|SLTIU |  Set on less than immediate unsigned      | 3  XXX      | YES | | YES
 44|SLTU  |  Set on less than unsigned                | 1  X        | YES | | YES
-45|SRA   |  Shift right arithmetic                   | 2  XX       | YES
-46|SRAV  |  Shift right arithmetic                   | 2  XX       | YES
-47|SRL   |  Shift right logical                      | 2  XX       | YES
-48|SRLV  |  Shift right logical variable             | 3  XXX      | YES
-49|SUB   |  Subtract                                 | 2  XX       | YES
-50|SUBU  |  Subtract unsigned                        | 1  X        | YES
-51|SW    |  Store word                               | 2  XX       | YES
-52|XOR   |  Bitwise exclusive or                     | 1  X        | YES
-53|XORI  |  Bitwise exclusive or immediate           | 2  XX       | YES
+45|SRA   |  Shift right arithmetic                   | 2  XX       | YES | | YES
+46|SRAV  |  Shift right arithmetic                   | 2  XX       | YES | | YES
+47|SRL   |  Shift right logical                      | 2  XX       | YES | | YES
+48|SRLV  |  Shift right logical variable             | 3  XXX      | YES | | YES
+49|SUB   |  Subtract                                 | 2  XX       | YES | | YES
+50|SUBU  |  Subtract unsigned                        | 1  X        | YES | | YES
+51|SW    |  Store word                               | 2  XX       | YES | | YES
+52|XOR   |  Bitwise exclusive or                     | 1  X        | YES | | YES
+53|XORI  |  Bitwise exclusive or immediate           | 2  XX       | YES | | YES

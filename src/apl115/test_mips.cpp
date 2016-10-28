@@ -1328,6 +1328,284 @@ int main(){
 	/*------------------------------------------------------------------*/
 	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SRA");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x3 << 0);
+	setupTestR(cpu, mem, instr, 0, 0x80000000, 1, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 15, &result);
+
+	passed = (result == 0xE0000000);
+	mips_test_end_test(testId, passed, "Result was: 0xE0000000");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SRA");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x3 << 0);
+	setupTestR(cpu, mem, instr, 0, 0x7FFFFFFF, 1, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 15, &result);
+
+	passed = (result == 0x1FFFFFFF);
+	mips_test_end_test(testId, passed, "Result was: 0x1FFFFFFF");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SRAV");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (13ul << 21) | (14ul << 16) | (15ul << 11) | (0ul << 6) | (0x7 << 0);
+	setupTestR(cpu, mem, instr, 1, 0x80000000, 0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 15, &result);
+
+	passed = (result == 0xC0000000);
+	mips_test_end_test(testId, passed, "Result was: 0xC0000000");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SRAV");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (13ul << 21) | (14ul << 16) | (15ul << 11) | (0ul << 6) | (0x7 << 0);
+	setupTestR(cpu, mem, instr, 1, 0x7FFFFFFF, 0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 15, &result);
+
+	passed = (result == 0x3FFFFFFF);
+	mips_test_end_test(testId, passed, "Result was: 0xC0000000");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SRL");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x2 << 0);
+	setupTestR(cpu, mem, instr, 0, 0b11111111, 0b1, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 15, &result);
+
+	passed = (result == 0b111111);
+	mips_test_end_test(testId, passed, "Result was: 0b111111");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SRLV");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (10ul << 21) | (11ul << 16) | (12ul) << 11 | (0ul << 6) | (0x6 << 0);
+	setupTestR(cpu, mem, instr, 4, 0b10101010, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 12, &result);
+
+	passed = (result == 0b1010);
+	mips_test_end_test(testId, passed, "Result was 0b1010");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, 100, 60, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 3, &result);
+	passed = (result == 100-60);
+
+	mips_test_end_test(testId, passed, "Result was: 40");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, -100, -60, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 3, &result);
+	passed = (result == -40);
+
+	mips_test_end_test(testId, passed, "Result was: -40");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, 0x7FFFFFFF, 0x80000000, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
+
+	passed = (err == mips_ExceptionArithmeticOverflow);
+
+	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SUB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (4ul << 21) | (5ul << 16) | (3ul) << 11 | (0ul << 6) | (0x22 << 0);
+	setupTestR(cpu, mem, instr, 0x80000000, 0x1, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
+
+	passed = (err == mips_ExceptionArithmeticOverflow);
+
+	mips_test_end_test(testId, passed, "Result was: mips_ExceptionArithmeticOverflow");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SUBU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (13ul << 21) | (14ul << 16) | (15ul << 11) | (0ul << 6) | (0x23 << 0);
+	setupTestR(cpu, mem, instr, 100, 60, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 15, &result);
+	passed = (result == 40);
+	mips_test_end_test(testId, passed, "Result was: 40");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SW");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xAE110004;
+	setupTestI(cpu, mem, instr, 3516, 50000, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_mem_read(mem, 3520, 4, buffer);
+	result = littleToBigEnd(buffer);
+
+	passed = (result == 50000);
+	mips_test_end_test(testId, passed, "Result: 50000, was written to 3520");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SW");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xAE11FFFC;
+	setupTestI(cpu, mem, instr, 3516, 60000, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_mem_read(mem, 3512, 4, buffer);
+	result = littleToBigEnd(buffer);
+
+	passed = (result == 60000);
+	mips_test_end_test(testId, passed, "Result: 60000, was written to 3512");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SW");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xAE110001;
+	setupTestI(cpu, mem, instr, 3516, 60000, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
+
+	passed = (err = mips_ExceptionInvalidAlignment);
+	mips_test_end_test(testId, passed, "Result: mips_ExceptionInvalidAlignment");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("XOR");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (7ul << 21) | (8ul << 16) | (9ul) << 11 | (0ul << 6) | (0x26 << 0);
+	setupTestR(cpu, mem, instr, 0b00001111, 0b10101010, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 9, &result);
+
+	passed = (result == 0b10100101);
+	mips_test_end_test(testId, passed, "Result was: 0b10100101");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("XORI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0b001110 << 26) | (16ul << 21) | (17ul << 16) | (0xAAAF << 0);
+	setupTestI(cpu, mem, instr, 0xFFFF0000, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 17, &result);
+
+	passed = (result == 0xFFFFAAAF);
+	mips_test_end_test(testId, passed, "Result was: 0xFFFFAAAF");
+
+
+
+
 	mips_test_end_suite();
 
 }
