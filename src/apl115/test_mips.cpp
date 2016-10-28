@@ -1706,6 +1706,75 @@ int main(){
 	passed = ((result == 272));
 	mips_test_end_test(testId, passed, "Branched to 272");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	uint32_t hi, lo;
+
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("Multu");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x014B0019; //multu r10 r11
+	writeInstrToMem(cpu, mem, PC, instr);
+	setupTestR(cpu, mem, instr, 0x1FFCDE, 0x1F0F, 0x0, testId, PC, PCNEXT, debugLvl);
+	mips_cpu_step(cpu);
+
+	instr = 0x00007010; //MFHI r14
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &hi);
+
+	instr = 0x00007812; //MFLO r15
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 15, &lo);
+
+	uint32_t hiVal, lowVal;
+	hiVal = 0b00000000000000000000000000000011;
+	lowVal = 0b11100001011111101011001100000010;
+
+	passed = ((hi == hiVal) && (lo == lowVal));
+	mips_test_end_test(testId, passed, "Answer = 0x3E17EB302");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("Mult");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x014B0018; //mult r10 r11
+	writeInstrToMem(cpu, mem, PC, instr);
+	setupTestR(cpu, mem, instr, 0xFFFFFFFF, 0xFFFFFFFF, 0x0, testId, PC, PCNEXT, debugLvl);
+	mips_cpu_step(cpu);
+
+	instr = 0x00007010; //MFHI r14
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &hi);
+
+	instr = 0x00007812; //MFLO r15
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 15, &lo);
+
+	hiVal = 0b0;
+	lowVal = 1;
+
+	cout << bitset<32>(hi) << endl;
+	cout << bitset<32>(lo) << endl;
+
+	passed = ((hi == hiVal) && (lo == lowVal));
+	mips_test_end_test(testId, passed, "Answer = 1");
 
 	mips_test_end_suite();
 

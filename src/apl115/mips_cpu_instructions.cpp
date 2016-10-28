@@ -78,8 +78,8 @@ mips_error MULT(uint32_t rs, uint32_t rt, mips_cpu_impl *state){
 	multb = (int64_t)rt;
 	result = multa * multb;
 	uint32_t Hi, Lo;
-	Hi = (uint32_t)(result >> 32);
-	Lo = (uint32_t)(result & 0xFFFFFFFF);
+	Hi = ((uint32_t)result & 0xFFFFFFFF00000000) >> 32;
+	Lo = (uint32_t)(result & 0x00000000FFFFFFFF);
 	MTHI(Hi, state);
 	MTLO(Lo, state);
 	return mips_Success;

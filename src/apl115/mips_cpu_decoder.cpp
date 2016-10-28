@@ -431,7 +431,6 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	uint32_t opcode, srca;
 	mips_error err;
 
-
 	opcode = instr >> 26;
 
 	switch (opcode)

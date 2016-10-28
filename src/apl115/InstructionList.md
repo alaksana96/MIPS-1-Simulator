@@ -30,12 +30,12 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 26|LW    |  Load word                                | 2  XX       | YES | | YES
 27|LWL   |  Load word left                           | 5  XXXXX    |
 28|LWR   |  Load word right                          | 5  XXXXX    |
-29|MFHI  |  Move from HI                             | 3  XXX      | YES
-30|MFLO  |  Move from LO                             | 3  XXX      | YES
+29|MFHI  |  Move from HI                             | 3  XXX      | YES | | YES
+30|MFLO  |  Move from LO                             | 3  XXX      | YES | | YES
 31|MTHI  |  Move to HI                               | 3  XXX      | YES | Tested for N-1, need to check N-2 | YES
 32|MTLO  |  Move to LO                               | 3  XXX      | YES | Not tested |YES
-33|MULT  |  Multiply                                 | 4  XXXX     | YES |
-34|MULTU |  Multiply unsigned                        | 4  XXXX     | YES |
+33|MULT  |  Multiply                                 | 4  XXXX     | YES | | YES
+34|MULTU |  Multiply unsigned                        | 4  XXXX     | YES | | YES
 35|OR    |  Bitwise or                               | 1  X        | YES | |YES
 36|ORI   |  Bitwise or immediate                     | 2  XX       | YES | |YES
 37|SB    |  Store byte                               | 3  XXX      | YES | Checked for all except +4 but im sure it works | YES
