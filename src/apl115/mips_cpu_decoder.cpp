@@ -187,6 +187,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		{
 		case 0:
 			//BLTZ
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BLTZ.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
 			return BLTZ(srca, immed, state);
 			break;
 		case 1:
@@ -199,6 +203,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 16:
 			//BLTZAL
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BLTZAL.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
 			return BLTZAL(srca, immed, state);
 			break;
 		case 17:

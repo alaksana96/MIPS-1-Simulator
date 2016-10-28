@@ -83,7 +83,7 @@ int main(){
 
 	uint32_t PC, PCNEXT;
 
-	mips_cpu_set_debug_level(cpu, 2, stderr);
+	mips_cpu_set_debug_level(cpu, 0, stderr);
 
 	/*------------------------------------------------------------------*/
 
@@ -347,7 +347,7 @@ int main(){
 	/*------------------------------------------------------------------*/
 	/*------------------------------------------------------------------*/
 
-	testId = mips_test_begin_test("BGEZ");
+	testId = mips_test_begin_test("BGEZAL");
 	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
@@ -366,7 +366,7 @@ int main(){
 
 	/*------------------------------------------------------------------*/
 
-	testId = mips_test_begin_test("BGEZ");
+	testId = mips_test_begin_test("BGEZAL");
 	passed = 0;
 	mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
@@ -500,6 +500,121 @@ int main(){
 
 	/*------------------------------------------------------------------*/
 	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x06600010; //bltz r19 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PCNEXT)+64);
+	mips_test_end_test(testId, passed, "BLTZ branched since negative");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x06600010; //bltz r19 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PCNEXT + 4));
+	mips_test_end_test(testId, passed, "BLTZ did not branched since 0");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x06600010; //bltz r19 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BLTZ branched since 0");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLTZAL");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x06B00010; //bltzal r21 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLTZAL
+
+	mips_cpu_get_pc_next(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
+
+
+	passed = ((result == (PCNEXT)+64) && (linkReg == (PCNEXT+4)));
+	mips_test_end_test(testId, passed, "BLTZAL branched and stored in Reg31");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLTZAL");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x06B00010; //bltzal r21 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_set_register(cpu, 31, 420);
+	mips_cpu_step(cpu); //Does BLTZAL
+
+	mips_cpu_get_pc_next(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
+
+
+	passed = ((result == (PCNEXT+4)) && (linkReg == 420));
+	mips_test_end_test(testId, passed, "BLTZAL did not branch, 420 stored in Reg31");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLTZAL");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x06B00010; //bltzal r21 0x10
+	setupTestI(cpu, mem, instr, 0x2, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_set_register(cpu, 31, 690);
+	mips_cpu_step(cpu); //Does BLTZAL
+
+	mips_cpu_get_pc_next(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
+
+
+	passed = ((result == (PCNEXT+4)) && (linkReg == 690));
+	mips_test_end_test(testId, passed, "BLTZAL did not branch, 690 stored in Reg31");
 
 	mips_test_end_suite();
 
