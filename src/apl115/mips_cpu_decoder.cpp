@@ -228,11 +228,19 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 6:
 			//BLEZ
-			return BLEZ(rs, immed16, state);
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BLEZ.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
+			return BLEZ(srca, immed16, state);
 			break;
 		case 7:
 			//BGTZ
-			return BGTZ(rs, immed16, state);
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BGTZ.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
+			return BGTZ(srca, immed16, state);
 			break;
 		case 8:
 			//ADDI

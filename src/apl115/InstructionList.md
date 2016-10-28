@@ -11,8 +11,8 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 7|BEQ   |  Branch on equal                          | 3  XXX      | YES | Bit more testing | UPDATED BEEQ
 8|BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing | YES
 9|BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     | YES | Bit more testing | YES
-10|BGTZ  |  Branch on greater than zero              | 3  XXX      | YES | NEED TO TEST
-11|BLEZ  |  Branch on less than or equal to zero     | 3  XXX      | YES | NEED TO TEST
+10|BGTZ  |  Branch on greater than zero              | 3  XXX      | YES | NEED TO TEST | YES
+11|BLEZ  |  Branch on less than or equal to zero     | 3  XXX      | YES | NEED TO TEST | YES
 12|BLTZ  |  Branch on less than zero                 | 3  XXX      | YES | NEED TO TEST
 13|BLTZAL|  Branch on less than zero and link        | 4  XXXX     | YES | NEED TO TEST
 14|BNE   |  Branch on not equal                      | 3  XXX      | YES | NEED TO TEST

@@ -124,7 +124,6 @@ mips_error BGEZ(uint32_t rs, uint16_t immed, mips_cpu_impl *state){
 	err = mips_cpu_get_pc_next(state, &nextPC);
 	if((rs >> 31) == 0){
 		err = mips_cpu_set_pc(state, nextPC);
-		cout << rs << endl;
 		return mips_cpu_set_pc_next(state, (uint32_t)((int32_t)nextPC + ((int32_t)((int16_t)immed) << 2)));
 	}
 	mips_cpu_set_pc_next(state, nextPC+4);

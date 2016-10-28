@@ -388,8 +388,118 @@ int main(){
 	/*------------------------------------------------------------------*/
 
 
+	testId = mips_test_begin_test("BGTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
 
+	instr = 0x1DE00010; //bgtz r15 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGTZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PC+4)+64);
+	mips_test_end_test(testId, passed, "BGTZ branched");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BGTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x1DE00010; //bgtz r15 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGTZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BGTZ did not branch because = 0");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BGTZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x1DE00010; //bgtz r15 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGTZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BGTZ did not branch because negative");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+
+	testId = mips_test_begin_test("BLEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x1A200010; //blez r17 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLEZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PC+4)+64);
+	mips_test_end_test(testId, passed, "BLEZ branched since negative");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x1A200010; //blez r17 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLEZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PCNEXT+4));
+	mips_test_end_test(testId, passed, "BLEZ did not branched");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BLEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x1A200010; //blez r17 0x10
+	setupTestI(cpu, mem, instr, 0x0, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BLEZ
+
+	mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PC+4)+64);
+	mips_test_end_test(testId, passed, "BLEZ branched since 0");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	mips_test_end_suite();
 
