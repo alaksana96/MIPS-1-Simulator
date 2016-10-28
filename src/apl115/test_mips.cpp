@@ -349,7 +349,7 @@ int main(){
 
 	testId = mips_test_begin_test("BGEZAL");
 	passed = 0;passed =
-	mips_cpu_get_pc(cpu, &PC);
+			mips_cpu_get_pc(cpu, &PC);
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
 
@@ -431,7 +431,7 @@ int main(){
 	mips_cpu_get_pc_next(cpu, &PCNEXT);
 
 	passed =
-	instr = 0x1DE00010; //bgtz r15 0x10
+			instr = 0x1DE00010; //bgtz r15 0x10
 	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu); //Does BGTZ
@@ -904,7 +904,6 @@ int main(){
 	passed = 0;
 
 	mips_cpu_set_register(cpu, 20, 1000);
-	mips_cpu_get_register(cpu, 20, &result);
 
 	instr = 0x02A00011; //mthi r21
 	setupTestR(cpu, mem, instr, 420, 0x0, 0x0, testId, PC, PCNEXT);
@@ -912,15 +911,14 @@ int main(){
 	mips_cpu_step(cpu);
 
 	instr = 0x0000A010; //mfhi r20
-	setupTestR(cpu, mem, instr, 0x0, 0x0, 300, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu);
 	mips_cpu_get_register(cpu, 20, &result);
-	cout << result << endl;
 
 	passed = (result == 420);
-	mips_test_end_test(testId, passed, "MFHI was set to 420");
+	mips_test_end_test(testId, passed, "HI was set to 420");
 
+	/*------------------------------------------------------------------*/
 	/*------------------------------------------------------------------*/
 
 	testId = mips_test_begin_test("MTLO");
@@ -929,7 +927,6 @@ int main(){
 	passed = 0;
 
 	mips_cpu_set_register(cpu, 20, 1000);
-	mips_cpu_get_register(cpu, 20, &result);
 
 	instr = 0x02800013; //mtlo r20
 	setupTestR(cpu, mem, instr, 420690, 0x0, 0x0, testId, PC, PCNEXT);
@@ -937,14 +934,167 @@ int main(){
 	mips_cpu_step(cpu);
 
 	instr = 0x0000A812; //mflo r21
-	setupTestR(cpu, mem, instr, 0x0, 0x0, 300, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu);
 	mips_cpu_get_register(cpu, 20, &result);
-	cout << result << endl;
 
 	passed = (result == 420690);
-	mips_test_end_test(testId, passed, "MFHI was set to 420");
+	mips_test_end_test(testId, passed, "LO was set to 420690");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("OR");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x00430825; //or r1 r2 r3
+	setupTestR(cpu, mem, instr, 0b10101010, 0b00001111, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 1, &result);
+
+	passed = (result == 0b10101111);
+	mips_test_end_test(testId, passed, "Or = 0b10101111");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("ORI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x3441AAAA; //ori r1 r2 0xffff
+	setupTestI(cpu, mem, instr, 0xFFFF0000, 0b0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 1, &result);
+
+	passed = (result == 0xFFFFAAAA);
+	mips_test_end_test(testId, passed, "Ori = 0b10101010");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xA3590001; //sb r25 0x1 r26
+	setupTestI(cpu, mem, instr, 3500, 0xFF, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	instr = 0x837C0001; //lb r28 0x1 r27
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	setupTestI(cpu, mem, instr, 3500, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 28, &result);
+
+	passed = (result == 0xFFFFFFFF); //Because using LB not LBU to check
+	mips_test_end_test(testId, passed, "Wrote 0xFF to memory address 3501");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xA359FFFF; //sb r25 0x1 r26
+	setupTestI(cpu, mem, instr, 3500, 0xFF, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	instr = 0x937C0001; //lbU r28 0x1 r27
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	setupTestI(cpu, mem, instr, 3498, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 28, &result);
+
+	passed = (result == 0xFF);
+	mips_test_end_test(testId, passed,"Wrote 0xFF to memory address 3499");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SH");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xA77C0001; //sh r28 0x1 r27
+	setupTestI(cpu, mem, instr, 3503, 0xFFAA, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	instr = 0x97DD0001; //lhU r29 0x1 r30
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	setupTestI(cpu, mem, instr, 3503, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 29, &result);
+
+	passed = (result == 0xFFAA);
+	mips_test_end_test(testId, passed, "Wrote 0xFFAA to memory address 3504");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SH");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xA77CFFFF; //sh r28 0x1 r27
+	setupTestI(cpu, mem, instr, 3505, 0xAAFF, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	instr = 0x97DD0001; //lhU r29 0x1 r30
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	setupTestI(cpu, mem, instr, 3503, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 29, &result);
+	passed = (result == 0xAAFF);
+	mips_test_end_test(testId, passed, "Wrote 0xAAFF to memory address 3504");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SH");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0xA77C0001; //sh r28 0x1 r27
+	setupTestI(cpu, mem, instr, 3506, 0xAAFF, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	err = mips_cpu_step(cpu);
+
+	passed = (err == mips_ExceptionInvalidAddress);
+	mips_test_end_test(testId, passed, "Invalid Address");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+
+
+
 
 
 

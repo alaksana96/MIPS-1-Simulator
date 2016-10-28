@@ -161,7 +161,7 @@ mips_error mips_cpu_step(
 	cout << bitset<32>(state->n1) << endl;
 	cout << bitset<32>(state->n) << endl;
 */
-	return mips_Success;
+	return err;
 
 
 
@@ -205,10 +205,18 @@ int mips_cpu_get_debug_level(mips_cpu_h state){
 }
 
 mips_error MFHI(uint32_t rd, mips_cpu_impl *state){
+	if(mips_cpu_get_debug_level(state) >= 1){
+		fprintf(stderr, "MFHI.\n");
+		fprintf(stderr, "dest=%u, HiVal=%08x.\n",rd, state->regHi);
+	}
 	return mips_cpu_set_register(state, rd, state->regHi);
 }
 
 mips_error MFLO(uint32_t rd, mips_cpu_impl *state){
+	if(mips_cpu_get_debug_level(state) >= 1){
+		fprintf(stderr, "MFLO.\n");
+		fprintf(stderr, "dest=%u, HiVal=%08x.\n",rd, state->regLo);
+	}
 	return mips_cpu_set_register(state, rd, state->regLo);
 }
 
@@ -218,8 +226,12 @@ mips_error MTHI(uint32_t rs, mips_cpu_impl *state){
 	}else if((((state->n1) & 0x7FF) == 0b10000) && (((state->n1)& 0xFFFF0000) == 0)){
 		return mips_Success;
 	} else {*/
+
+	if(mips_cpu_get_debug_level(state) >= 1){
+		fprintf(stderr, "MTHI.\n");
+		fprintf(stderr, "srcVal=%08x.\n",rs);
+	}
 		state->regHi = rs;
-		cout << state->regHi << " FD" << endl;
 		return mips_Success;
 	//}
 	//undefined
@@ -231,6 +243,11 @@ mips_error MTLO(uint32_t rs, mips_cpu_impl *state){
 	//if((((state->n2) & 0x3F) != 0b010010) && (((state->n1) & 0x3F) != 0b010010)){
 		//state->regLo = rs;
 		//return mips_Success;
+	if(mips_cpu_get_debug_level(state) >= 1){
+		fprintf(stderr, "MTLO.\n");
+		fprintf(stderr, "srcVal=%08x.\n",rs);
+	}
+	state->regLo = rs;
 	//}
 	//undefined
 	return mips_Success;

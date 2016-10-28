@@ -298,7 +298,7 @@ mips_error SH(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mi
 	if(((rs + (uint32_t)((int16_t)immed)) % 2) != 0){
 		return mips_ExceptionInvalidAddress;
 	}
-	return mips_mem_write(mem,(rs + (uint32_t)((int16_t)immed)) , 2, buffer);
+	return mips_mem_write(mem,(rs + (int32_t)((int16_t)immed)) , 2, buffer);
 }
 
 mips_error SW(uint32_t rs, uint32_t rt, uint16_t immed, mips_cpu_impl *state, mips_mem_h mem){

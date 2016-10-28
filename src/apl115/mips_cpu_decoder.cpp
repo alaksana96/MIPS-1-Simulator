@@ -259,7 +259,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "ADDI.\n");
 				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
 			}
-			ADDI(srca, rt, immed16, state);
+			err = ADDI(srca, rt, immed16, state);
 			break;
 		case 9:
 			//ADDIU
@@ -267,16 +267,16 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "ADDIU.\n");
 				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
 			}
-			ADDIU(srca, rt, immed16, state);
+			err = ADDIU(srca, rt, immed16, state);
 			break;
 		case 10:
 			//SLTI
-			SLTI(srca, rt, immed16, state);
+			err = SLTI(srca, rt, immed16, state);
 			break;
 
 		case 11:
 			//SLTIU
-			SLTIU(srca, rt, immed16, state);
+			err = SLTIU(srca, rt, immed16, state);
 			break;
 		case 12:
 			//ANDI
@@ -284,11 +284,15 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "ANDI.\n");
 				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
 			}
-			ANDI(srca, rt, immed16, state);
+			err = ANDI(srca, rt, immed16, state);
 			break;
 		case 13:
 			//ORI
-			ORI(srca, rt, immed16, state);
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "ORI.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
+			err = ORI(srca, rt, immed16, state);
 			break;
 		case 14:
 			//XORI
@@ -300,7 +304,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "LUI.\n");
 				fprintf(stderr, "dest=%u immed=%08x.\n",rt,immed);
 			}
-			LUI(rt, immed16, state);
+			err = LUI(rt, immed16, state);
 			break;
 		case 32:
 			//LB
@@ -308,7 +312,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "LB.\n");
 				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
 			}
-			LB(srca, rt, immed16, state, mem);
+			err = LB(srca, rt, immed16, state, mem);
 			break;
 		case 33:
 			//LH
@@ -316,7 +320,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "LH.\n");
 				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
 			}
-			LH(srca, rt, immed16, state, mem);
+			err = LH(srca, rt, immed16, state, mem);
 			break;
 		case 35:
 			//LW
@@ -332,7 +336,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "LBU.\n");
 				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
 			}
-			LBU(srca, rt, immed16, state, mem);
+			err = LBU(srca, rt, immed16, state, mem);
 			break;
 		case 37:
 			//LHU
@@ -340,7 +344,7 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 				fprintf(stderr, "LHU.\n");
 				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
 			}
-			LHU(srca, rt, immed16, state, mem);
+			err = LHU(srca, rt, immed16, state, mem);
 			break;
 		case 40:
 			//SB
@@ -348,18 +352,20 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 41:
 			//SH
-			SH(srca, srcb, immed16, state, mem);
+			err = SH(srca, srcb, immed16, state, mem);
+
 			break;
 		case 43:
 			//SW
-			SW(srca, srcb, immed16, state, mem);
+			err = SW(srca, srcb, immed16, state, mem);
 			break;
 
 	}
 
 	mips_cpu_set_pc(state, originalPCNext);
 	mips_cpu_set_pc_next(state, originalPCNext+4);
-	return mips_Success;
+
+	return err;
 
 }
 
@@ -413,9 +419,9 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 
 	default :
 		err = decodeIInstruction(instr, mem, state);
+
 		break;
 
 	}
-
 	return err;
 }

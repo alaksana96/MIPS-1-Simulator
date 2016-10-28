@@ -36,10 +36,10 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 32|MTLO  |  Move to LO                               | 3  XXX      | YES | Not tested |YES
 33|MULT  |  Multiply                                 | 4  XXXX     |
 34|MULTU |  Multiply unsigned                        | 4  XXXX     |
-35|OR    |  Bitwise or                               | 1  X        | YES
-36|ORI   |  Bitwise or immediate                     | 2  XX       | YES
-37|SB    |  Store byte                               | 3  XXX      | YES | Checked for all except +4 but im sure it works
-38|SH    |  Store half-word                          | 3  XXX      | YES | Need to check for unaligned
+35|OR    |  Bitwise or                               | 1  X        | YES | |YES
+36|ORI   |  Bitwise or immediate                     | 2  XX       | YES | |YES
+37|SB    |  Store byte                               | 3  XXX      | YES | Checked for all except +4 but im sure it works | YES
+38|SH    |  Store half-word                          | 3  XXX      | YES | Need to check for unaligned | YES
 39|SLL   |  Shift left logical                       | 2  XX       | YES
 40|SLLV  |  Shift left logical variable              | 3  XXX      | YES
 41|SLT   |  Set on less than (signed)                | 2  XX       | YES
