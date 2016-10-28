@@ -72,6 +72,54 @@ mips_error JALR(uint32_t rs, uint32_t rd, mips_cpu_impl *state){
 }
 
 
+mips_error MULT(uint32_t rs, uint32_t rt, mips_cpu_impl *state){
+	int64_t multa, multb, result;
+	multa = (int64_t)rs;
+	multb = (int64_t)rt;
+	result = multa * multb;
+	uint32_t Hi, Lo;
+	Hi = (uint32_t)(result >> 32);
+	Lo = (uint32_t)(result & 0xFFFFFFFF);
+	MTHI(Hi, state);
+	MTLO(Lo, state);
+	return mips_Success;
+
+}
+
+
+mips_error MULTU(uint32_t rs, uint32_t rt, mips_cpu_impl *state){
+	uint64_t multa, multb, result;
+	multa = (uint64_t)rs;
+	multb = (uint64_t)rt;
+	result = multa * multb;
+	uint32_t Hi, Lo;
+	Hi = (uint32_t)(result >> 32);
+	Lo = (uint32_t)(result & 0xFFFFFFFF);
+	MTHI(Hi, state);
+	MTLO(Lo, state);
+	return mips_Success;
+
+}
+
+mips_error DIV(uint32_t rs, uint32_t rt, mips_cpu_impl *state){
+	int32_t Hi, Lo;
+	Lo = ((int32_t)rs)/((int32_t)rt);
+	Hi = ((int32_t)rs)%((int32_t)rt);
+	MTHI((uint32_t)Hi, state);
+	MTLO((uint32_t)Lo, state);
+	return mips_Success;
+}
+
+mips_error DIVU(uint32_t rs, uint32_t rt, mips_cpu_impl *state){
+	uint32_t Hi, Lo;
+	Lo = rs/rt;
+	Hi = rs%rt;
+	MTHI(Hi, state);
+	MTLO(Lo, state);
+	return mips_Success;
+}
+
+
 mips_error ADD(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	if(((!isNegative32(rs) && !isNegative32(rt)) && isNegative32((uint32_t)((int32_t)rs + (int32_t)rt)))
 			||

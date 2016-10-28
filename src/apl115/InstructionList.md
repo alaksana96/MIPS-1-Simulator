@@ -16,8 +16,8 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 12|BLTZ  |  Branch on less than zero                 | 3  XXX      | YES | NEED TO TEST | YES
 13|BLTZAL|  Branch on less than zero and link        | 4  XXXX     | YES | NEED TO TEST | YES
 14|BNE   |  Branch on not equal                      | 3  XXX      | YES | NEED TO TEST | YES
-15|DIV   |  Divide                                   | 4  XXXX     |     |
-16|DIVU  |  Divide unsigned                          | 4  XXXX     |     |
+15|DIV   |  Divide                                   | 4  XXXX     | YES    |
+16|DIVU  |  Divide unsigned                          | 4  XXXX     | YES    |
 17|J     |  Jump                                     | 3  XXX      | YES    |
 18|JALR  |  Jump and link register                   | 4  XXXX     | YES   |
 19|JAL   |  Jump and link                            | 4  XXXX     | YES    |
@@ -34,8 +34,8 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 30|MFLO  |  Move from LO                             | 3  XXX      | YES
 31|MTHI  |  Move to HI                               | 3  XXX      | YES | Tested for N-1, need to check N-2 | YES
 32|MTLO  |  Move to LO                               | 3  XXX      | YES | Not tested |YES
-33|MULT  |  Multiply                                 | 4  XXXX     |
-34|MULTU |  Multiply unsigned                        | 4  XXXX     |
+33|MULT  |  Multiply                                 | 4  XXXX     | YES |
+34|MULTU |  Multiply unsigned                        | 4  XXXX     | YES |
 35|OR    |  Bitwise or                               | 1  X        | YES | |YES
 36|ORI   |  Bitwise or immediate                     | 2  XX       | YES | |YES
 37|SB    |  Store byte                               | 3  XXX      | YES | Checked for all except +4 but im sure it works | YES

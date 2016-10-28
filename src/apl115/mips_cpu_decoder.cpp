@@ -91,15 +91,19 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 24:
 		//MULT
+		err = MULT(srca, srcb, state);
 		break;
 	case 25:
 		//MULTU
+		err = MULTU(srca, srcb, state);
 		break;
 	case 26:
 		//DIV
+		err = DIV(srca, srcb, state);
 		break;
 	case 27:
 		//DIVU
+		err = DIVU(srca, srcb, state);
 		break;
 	case 32:
 		//ADD
