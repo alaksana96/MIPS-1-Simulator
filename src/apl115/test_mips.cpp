@@ -79,10 +79,11 @@ int main(){
 	uint32_t instr, result;
 	uint8_t temp8;
 	uint8_t buffer[4];
+	uint32_t linkReg;
 
 	uint32_t PC, PCNEXT;
 
-	mips_cpu_set_debug_level(cpu, 0, stderr);
+	mips_cpu_set_debug_level(cpu, 2, stderr);
 
 	/*------------------------------------------------------------------*/
 
@@ -284,12 +285,112 @@ int main(){
 	setupTestI(cpu, mem, instr, 0x3, 0x3, testId, PC, PCNEXT);
 	writeInstrToMem(cpu, mem, PC, instr);
 	mips_cpu_step(cpu); //Does BEQ
-	mips_cpu_step(cpu); //Does Delay
 	err = mips_cpu_get_pc_next(cpu, &result);
 
 	passed = (result == (PC+4)+64);
 
 	mips_test_end_test(testId, passed, "branched");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BEQ");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x114B0010; //beq r10 r11 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x4, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BEQ
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == PC+4);
+	mips_test_end_test(testId, passed, "Not branched");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BGEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+	instr = 0x05410010;// bgez r10 0x10 branch by 64
+	setupTestI(cpu, mem, instr, 0x3, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZ
+	err = mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PC+4)+64);
+
+	mips_test_end_test(testId, passed, "BGEZ Branched");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BGEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+	instr = 0x05410010;// bgez r10 0x10 branch by 64, less than zero so should not branch
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZ
+	err = mips_cpu_get_pc(cpu, &PC);
+	err = mips_cpu_get_pc_next(cpu, &result);
+
+	passed = (result == (PC+4));
+
+	mips_test_end_test(testId, passed, "BGEZ did not Branch");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BGEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x05D10010; //bgezal r14 0x10
+	setupTestI(cpu, mem, instr, 0x20, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZAL
+
+	mips_cpu_get_pc_next(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
+
+	passed = ((result == (PC+4)+64) && (linkReg == (PCNEXT+4)));
+	mips_test_end_test(testId, passed, "BGEZAL branched and stored in Reg31");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("BGEZ");
+	passed = 0;
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+
+
+	instr = 0x05D10010; //bgezal r14 0x10
+	setupTestI(cpu, mem, instr, 0xFFFFFFF1, 0x0, testId, PC, PCNEXT);
+	mips_cpu_set_register(cpu, 31, 0x0);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu); //Does BGEZAL
+
+	mips_cpu_get_pc_next(cpu, &result);
+	mips_cpu_get_register(cpu, 31, &linkReg);
+
+	passed = ((result == (PC+4)+64) && (linkReg == 0));
+	mips_test_end_test(testId, passed, "BGEZAL did not branch");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+
+
+
+
 	mips_test_end_suite();
 
 }

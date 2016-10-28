@@ -187,19 +187,27 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		{
 		case 0:
 			//BLTZ
-			return BLTZ(rs, immed, state);
+			return BLTZ(srca, immed, state);
 			break;
 		case 1:
 			//BGEZ
-			return BGEZ(rs, immed, state);
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BGEZ.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
+			return BGEZ(srca, immed, state);
 			break;
 		case 16:
 			//BLTZAL
-			return BLTZAL(rs, immed, state);
+			return BLTZAL(srca, immed, state);
 			break;
 		case 17:
 			//BGEZAL
-			return BGEZAL(rs, immed, state);
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BGEZ.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
+			return BGEZAL(srca, immed, state);
 			break;
 
 		}
@@ -208,6 +216,10 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 
 		case 4:
 			//BEQ
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "BEQ.\n");
+				fprintf(stderr, "rsVal=%08x, immed=%08x.\n",srca, immed);
+			}
 			return BEQ(srca, srcb, immed16, state);
 			break;
 		case 5:

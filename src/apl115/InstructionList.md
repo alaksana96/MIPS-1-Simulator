@@ -9,8 +9,8 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 5|AND   |  Bitwise and                              | 1  X        | YES | | YES
 6|ANDI  |  Bitwise and immediate                    | 2  XX       | YES | | YES
 7|BEQ   |  Branch on equal                          | 3  XXX      | YES | Bit more testing | UPDATED BEEQ
-8|BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing
-9|BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     | YES | Bit more testing
+8|BGEZ  |  Branch on greater than or equal to zero  | 3  XXX      | YES | Bit more testing | YES
+9|BGEZAL|  Branch on non-negative (>=0) and link    | 4  XXXX     | YES | Bit more testing | YES
 10|BGTZ  |  Branch on greater than zero              | 3  XXX      | YES | NEED TO TEST
 11|BLEZ  |  Branch on less than or equal to zero     | 3  XXX      | YES | NEED TO TEST
 12|BLTZ  |  Branch on less than zero                 | 3  XXX      | YES | NEED TO TEST
