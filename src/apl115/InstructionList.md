@@ -40,8 +40,8 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 36|ORI   |  Bitwise or immediate                     | 2  XX       | YES | |YES
 37|SB    |  Store byte                               | 3  XXX      | YES | Checked for all except +4 but im sure it works | YES
 38|SH    |  Store half-word                          | 3  XXX      | YES | Need to check for unaligned | YES
-39|SLL   |  Shift left logical                       | 2  XX       | YES
-40|SLLV  |  Shift left logical variable              | 3  XXX      | YES
+39|SLL   |  Shift left logical                       | 2  XX       | YES | | YES
+40|SLLV  |  Shift left logical variable              | 3  XXX      | YES | | YES
 41|SLT   |  Set on less than (signed)                | 2  XX       | YES
 42|SLTI  |  Set on less than immediate (signed)      | 3  XXX      | YES
 43|SLTIU |  Set on less than immediate unsigned      | 3  XXX      | YES

@@ -1092,11 +1092,41 @@ int main(){
 	/*------------------------------------------------------------------*/
 	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLL");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
 
+	instr = (0ul << 26) | (0ul << 21) | (14ul << 16) | (15ul << 11) | (2ul << 6) | (0x0 << 0);
+	setupTestR(cpu, mem, instr, 0x0, 0b1010, 0b1, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
 
+	mips_cpu_get_register(cpu, 15, &result);
 
+	passed = (result == 0b101000);
+	mips_test_end_test(testId, passed, "Result was: 0b101000");
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLL");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (10ul << 21) | (11ul << 16) | (12ul) << 11 | (0ul << 6) | (0x4 << 0);
+	setupTestR(cpu, mem, instr, 4, 0b10101010, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	err = mips_cpu_get_register(cpu, 12, &result);
+
+	passed = (result == 0xAA0);
+	mips_test_end_test(testId, passed, "Result was 0b101010100000");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 
 	mips_test_end_suite();
