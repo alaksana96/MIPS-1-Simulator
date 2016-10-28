@@ -28,21 +28,24 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	err = mips_cpu_get_register(state, rs, &srca);
 	err = mips_cpu_get_register(state, rt, &srcb);
 
+	uint32_t originalPC, originalPCNext;
+	mips_cpu_get_pc(state, &originalPC);
+	mips_cpu_get_pc_next(state, &originalPCNext);
 
 	switch(func)
 	{
 	case 0:
 		//SLL
-		return SLL(srcb, rd, shift, state);
+		 err = SLL(srcb, rd, shift, state);
 		break;
 
 	case 2:
 		//SRL
-		return SRL(srcb, rd, shift, state);
+		 err = SRL(srcb, rd, shift, state);
 		break;
 	case 3:
 		//SRA
-		return SRA(srcb, rd, shift, state);
+		 err =  SRA(srcb, rd, shift, state);
 		break;
 	case 4:
 		//SLLV
@@ -50,11 +53,11 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 6:
 		//SRLV
-		return SRLV(srca, srcb, rd, state);
+		 err =  SRLV(srca, srcb, rd, state);
 		break;
 	case 7:
 		//SRAV
-		return SRAV(srca, srcb, rd, state);
+		 err = SRAV(srca, srcb, rd, state);
 		break;
 	case 8:
 		//JR
@@ -70,19 +73,19 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 16:
 		//MFHI
-		return MFHI(rd, state);
+		 err = MFHI(rd, state);
 		break;
 	case 17:
 		//MTHI
-		return MTHI(srca, state);
+		 err = MTHI(srca, state);
 		break;
 	case 18:
 		//MFLO
-		return MFLO(rd, state);
+		 err = MFLO(rd, state);
 		break;
 	case 19:
 		//MTLO
-		return MTLO(srca, state);
+		 err = MTLO(srca, state);
 		break;
 	case 24:
 		//MULT
@@ -102,7 +105,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			fprintf(stderr, "ADD.\n");
 			fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
 		}
-		return ADD(srca, srcb, rd, state);
+		 err = ADD(srca, srcb, rd, state);
 		break;
 	case 33:
 		//ADDU
@@ -110,11 +113,11 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			fprintf(stderr, "ADDU.\n");
 			fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
 		}
-		return ADDU(srca, srcb, rd, state);
+		 err = ADDU(srca, srcb, rd, state);
 		break;
 	case 34:
 		//SUB
-		return SUB(srca, srcb, rd, state);
+		 err =  SUB(srca, srcb, rd, state);
 		break;
 	case 35:
 		//SUBU
@@ -122,7 +125,7 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 36:
 		//AND
-		return AND(srca, srcb, rd, state);
+		 err = AND(srca, srcb, rd, state);
 		if(mips_cpu_get_debug_level(state) >= 1){
 			fprintf(stderr, "AND.\n");
 			fprintf(stderr, "rsVal=%08x, rtVal=%08x.\n",srca, srcb);
@@ -130,11 +133,11 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 37:
 		//OR
-		return OR(srca, srcb, rd, state);
+		 err = OR(srca, srcb, rd, state);
 		break;
 	case 38:
 		//XOR
-		return XOR(srca, srcb, rd, state);
+		 err = XOR(srca, srcb, rd, state);
 		break;
 	case 39:
 		//NOR NOT IN DT SPEC
@@ -142,18 +145,24 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 42:
 		//SLT
-		return SLT(srca, srcb, rd, state);
+		 err = SLT(srca, srcb, rd, state);
 		break;
 	case 43:
 		//SLTU
-		return SLTU(srca, srcb, rd, state);
+		 err = SLTU(srca, srcb, rd, state);
+		break;
+	default:
+		err =  mips_ErrorNotImplemented;
 		break;
 	}
 
+	mips_cpu_set_pc(state, originalPCNext);
+	mips_cpu_set_pc_next(state, originalPCNext+4);
 
 
 
-	return mips_ErrorNotImplemented;
+
+	return err;
 
 }
 
@@ -359,6 +368,9 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			//SW
 			err = SW(srca, srcb, immed16, state, mem);
 			break;
+		default:
+			err = mips_ErrorNotImplemented;
+			break;
 
 	}
 
@@ -377,14 +389,30 @@ mips_error decodeJInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 	opcode = instr >> 26;
 	target = (instr & 0x3FFFFFF);
 
+	uint32_t originalPC, originalPCNext;
+	mips_cpu_get_pc(state, &originalPC);
+	mips_cpu_get_pc_next(state, &originalPCNext);
+
+	uint8_t buffer[4];
+	mips_mem_read(mem, originalPCNext, 4, buffer);
+	uint32_t nextInstr = littleToBigReadWord(buffer);
+
+
+	uint32_t jump = (nextInstr & 0xF0000000) | (target << 2);
+
 	switch(opcode)
 	{
 	case 0b000010:
 		//J
+		mips_cpu_set_pc(state, originalPCNext);
+		return mips_cpu_set_pc_next(state, jump);
 		break;
 
 	case 0b000011:
 		//JAL
+		mips_cpu_set_pc(state, originalPCNext);
+		mips_cpu_set_register(state, 31, originalPC+8);
+		return mips_cpu_set_pc_next(state, jump);
 		break;
 	}
 
@@ -397,9 +425,6 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 	uint32_t opcode, srca;
 	mips_error err;
 
-	uint32_t originalPC, originalPCNext;
-	mips_cpu_get_pc(state, &originalPC);
-	mips_cpu_get_pc_next(state, &originalPCNext);
 
 	opcode = instr >> 26;
 
@@ -418,8 +443,7 @@ mips_error decodeInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* stat
 		break;
 
 	default :
-		err = decodeIInstruction(instr, mem, state);
-
+		return decodeIInstruction(instr, mem, state);
 		break;
 
 	}

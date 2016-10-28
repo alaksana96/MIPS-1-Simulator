@@ -92,7 +92,7 @@ mips_error mips_cpu_set_register(
 	}else if(index>=32){
 		return mips_ErrorInvalidArgument;
 	}else if(index == 0){
-		state->regs[0] = 0; //No error but won't change the value from 0.
+		return mips_Success; //No error but won't change the value from 0.
 	}
 
 	state->regs[index] = value;
@@ -209,6 +209,7 @@ mips_error MFHI(uint32_t rd, mips_cpu_impl *state){
 		fprintf(stderr, "MFHI.\n");
 		fprintf(stderr, "dest=%u, HiVal=%08x.\n",rd, state->regHi);
 	}
+	cout << state->regHi << endl;
 	return mips_cpu_set_register(state, rd, state->regHi);
 }
 
