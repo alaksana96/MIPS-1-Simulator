@@ -1770,11 +1770,92 @@ int main(){
 	hiVal = 0b0;
 	lowVal = 1;
 
+	passed = ((hi == hiVal) && (lo == lowVal));
+	mips_test_end_test(testId, passed, "Answer = 1");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("DIVU");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x014B001B; //DIVU r10 r11
+	writeInstrToMem(cpu, mem, PC, instr);
+	setupTestR(cpu, mem, instr, 0xFF001122, 3, 0x0, testId, PC, PCNEXT, debugLvl);
+	mips_cpu_step(cpu);
+
+	instr = 0x00007010; //MFHI r14
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &hi);
+
+	instr = 0x00007812; //MFLO r15
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 15, &lo);
+
+	hiVal = 0;
+	lowVal = 0x550005B6;
+
+	passed = ((hi == hiVal) && (lo == lowVal));
+	mips_test_end_test(testId, passed, "Answer = 0x550005B6");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("DIV");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x014B001A; //DIV r10 r11
+	writeInstrToMem(cpu, mem, PC, instr);
+	setupTestR(cpu, mem, instr, -200, 2, 0x0, testId, PC, PCNEXT, debugLvl);
+	mips_cpu_step(cpu);
+
+	instr = 0x00007010; //MFHI r14
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &hi);
+
+	instr = 0x00007812; //MFLO r15
+	mips_cpu_get_pc(cpu, &PC);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 15, &lo);
+
+	hiVal = 0;
+	lowVal = 0xFFFFFF9C;
+
 	cout << bitset<32>(hi) << endl;
 	cout << bitset<32>(lo) << endl;
 
 	passed = ((hi == hiVal) && (lo == lowVal));
-	mips_test_end_test(testId, passed, "Answer = 1");
+	mips_test_end_test(testId, passed, "Answer = -100");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+	mips_cpu_reset(cpu);
+	testId = mips_test_begin_test("SLLV");
+	mips_cpu_get_pc(cpu, &PC);
+	PCNEXT = PC + 4;
+	passed = 0;
+
+	instr = 0x018B5004; //sllv r10 r11 r12
+	writeInstrToMem(cpu, mem, PC, instr);
+	setupTestR(cpu, mem, instr, 2, 0x1100, 0x0, testId, PC, PCNEXT, debugLvl);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 0x4400);
+	mips_test_end_test(testId, passed, "Answer = 0x4400");
 
 	mips_test_end_suite();
 
