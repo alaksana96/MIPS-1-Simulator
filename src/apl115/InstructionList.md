@@ -42,10 +42,10 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 38|SH    |  Store half-word                          | 3  XXX      | YES | Need to check for unaligned | YES
 39|SLL   |  Shift left logical                       | 2  XX       | YES | | YES
 40|SLLV  |  Shift left logical variable              | 3  XXX      | YES | | YES
-41|SLT   |  Set on less than (signed)                | 2  XX       | YES
-42|SLTI  |  Set on less than immediate (signed)      | 3  XXX      | YES
-43|SLTIU |  Set on less than immediate unsigned      | 3  XXX      | YES
-44|SLTU  |  Set on less than unsigned                | 1  X        | YES
+41|SLT   |  Set on less than (signed)                | 2  XX       | YES | | YES
+42|SLTI  |  Set on less than immediate (signed)      | 3  XXX      | YES | | YES
+43|SLTIU |  Set on less than immediate unsigned      | 3  XXX      | YES | | YES
+44|SLTU  |  Set on less than unsigned                | 1  X        | YES | | YES
 45|SRA   |  Shift right arithmetic                   | 2  XX       | YES
 46|SRAV  |  Shift right arithmetic                   | 2  XX       | YES
 47|SRL   |  Shift right logical                      | 2  XX       | YES

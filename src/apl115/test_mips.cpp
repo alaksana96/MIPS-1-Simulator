@@ -1128,6 +1128,205 @@ int main(){
 	/*------------------------------------------------------------------*/
 	/*------------------------------------------------------------------*/
 
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, -60, 780, 420, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	err = mips_cpu_get_register(cpu, 18, &result);
+
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, 6000, -780, 420, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	err = mips_cpu_get_register(cpu, 18, &result);
+
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, -6000, -780, 420, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	err = mips_cpu_get_register(cpu, 18, &result);
+
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLT");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2A << 0);
+	setupTestR(cpu, mem, instr, 6000, 780, 420, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	err = mips_cpu_get_register(cpu, 18, &result);
+
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x296A0100; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, 200, 400, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x296A0100; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, 300, 400, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x296AFFFF; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, 300, 400, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x296AFFFF; //slti r10 r11 0x100
+	setupTestI(cpu, mem, instr, -200, 400, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 10, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was False");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTIU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0b001011 << 26) | (16ul << 21) | (17ul << 16) | (0x00FF << 0);
+	setupTestI(cpu, mem, instr, 1, 400, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 17, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTIU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0b001011 << 26) | (16ul << 21) | (17ul << 16) | (0xFFFF << 0);
+	setupTestI(cpu, mem, instr, 0xFFFFF, 400, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 17, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was False");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2B << 0);
+	setupTestR(cpu, mem, instr, 60, 780, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 18, &result);
+	passed = (result == 1);
+	mips_test_end_test(testId, passed, "Result was True");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("SLTU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = (0ul << 26) | (16ul << 21) | (17ul << 16) | (18ul) << 11 | (0ul << 6) | (0x2B << 0);
+	setupTestR(cpu, mem, instr, 0xF000000FF, 1, 0x20, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+
+	mips_cpu_get_register(cpu, 18, &result);
+	passed = (result == 0);
+	mips_test_end_test(testId, passed, "Result was True");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
 
 	mips_test_end_suite();
 
