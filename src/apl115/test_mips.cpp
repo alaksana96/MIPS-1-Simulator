@@ -1637,7 +1637,7 @@ int main(){
 	mips_cpu_step(cpu);
 	mips_cpu_get_pc(cpu, &result);
 
-	passed = (result == 2052);
+	passed = (result == 2048);
 	mips_test_end_test(testId, passed, "Branched to 2052");
 	//branch amount = 2048
 
@@ -1659,7 +1659,7 @@ int main(){
 	mips_cpu_step(cpu);
 	mips_cpu_get_pc(cpu, &result);
 
-	passed = ((result == 1092) && (linkReg == 8));
+	passed = ((result == 1088) && (linkReg == 8));
 	mips_test_end_test(testId, passed, "Branched to 28, stored 8 in reg 31");
 	//branch amount = 24
 
