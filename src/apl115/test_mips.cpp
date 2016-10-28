@@ -652,6 +652,218 @@ int main(){
 	mips_test_end_test(testId, passed, "Not branched");
 
 
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+	/*---------------------------------GOOD-----------------------------*/
+	/*----------------------------------SIR-----------------------------*/
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	instr = 0xAAFFBBCC; //Test Value
+	writeInstrToMem(cpu, mem, 4000, instr); //Store Test Value in Mem at 4000
+	instr = 0x01220BCC; //Test Value
+	writeInstrToMem(cpu, mem, 4004, instr); //Store Test Value in Mem at 4004
+
+	testId = mips_test_begin_test("LB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x81EE0010; //lb r14 0x10 r15
+	setupTestI(cpu, mem, instr, 3984, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0xFFFFFFAA);
+	mips_test_end_test(testId, passed, "Loaded 0xFFFFFFAA");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LB");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x81EEFFFE; //lb r14 0x10 r15
+	setupTestI(cpu, mem, instr, 4006, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0x01);
+	mips_test_end_test(testId, passed, "Loaded 0x01");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LBU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x91EE0001; //lbu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4000, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+	passed = (result == 0xFF);
+	mips_test_end_test(testId, passed, "Loaded 0xFF");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LBU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x91EEFFFE; //lbu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4009, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0xCC);
+	mips_test_end_test(testId, passed, "Loaded 0xCC");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LH");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x85EE0001; //lh r14 0x1 r15
+	setupTestI(cpu, mem, instr, 3999, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0xFFFFAAFF);
+	mips_test_end_test(testId, passed, "Loaded 0xFFFFAAFF");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LH");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x85EEFFFF; //lh r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4007, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0x0BCC);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LHU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x95EE0001; //lhu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 3999, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0xAAFF);
+	mips_test_end_test(testId, passed, "Loaded 0xAAFF");
+
+	/*------------------------------------------------------------------*/
+	testId = mips_test_begin_test("LHU");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x95EE0001; //lhu r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0x0BCC);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LUI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x3C0E0001; //lui r14 0x1
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0x10000);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LUI");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x3C0EF001; //lui r14 0x1
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	passed = (result == 0xF0010000);
+	mips_test_end_test(testId, passed, "Loaded 0x0BCC");
+
+	/*------------------------------------------------------------------*/
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LW");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x8DEE0001; //lw r14 0x1 r15
+	setupTestI(cpu, mem, instr, 3999, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	cout << result << endl;
+	passed = (result == 0xAAFFBBCC);
+	mips_test_end_test(testId, passed, "Loaded 0xAAFFBBCC");
+
+	/*------------------------------------------------------------------*/
+
+	testId = mips_test_begin_test("LW");
+	mips_cpu_get_pc(cpu, &PC);
+	mips_cpu_get_pc_next(cpu, &PCNEXT);
+	passed = 0;
+
+	instr = 0x8DEEFFFF; //lw r14 0x1 r15
+	setupTestI(cpu, mem, instr, 4005, 0x0, testId, PC, PCNEXT);
+	writeInstrToMem(cpu, mem, PC, instr);
+	mips_cpu_step(cpu);
+	mips_cpu_get_register(cpu, 14, &result);
+
+	cout << result << endl;
+	passed = (result == 0x01220BCC);
+	mips_test_end_test(testId, passed, "Loaded 0x01220BCC");
+
+
+
 	mips_test_end_suite();
 
 }

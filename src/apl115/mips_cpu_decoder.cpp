@@ -297,26 +297,50 @@ mips_error decodeIInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 			break;
 		case 15:
 			//LUI
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "LUI.\n");
+				fprintf(stderr, "dest=%u immed=%08x.\n",rt,immed);
+			}
 			LUI(rt, immed16, state);
 			break;
 		case 32:
 			//LB
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "LB.\n");
+				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
+			}
 			LB(srca, rt, immed16, state, mem);
 			break;
 		case 33:
 			//LH
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "LH.\n");
+				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
+			}
 			LH(srca, rt, immed16, state, mem);
 			break;
 		case 35:
 			//LW
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "LW.\n");
+				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
+			}
 			LW(srca, rt, immed16, state, mem);
 			break;
 		case 36:
 			//LBU
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "LBU.\n");
+				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
+			}
 			LBU(srca, rt, immed16, state, mem);
 			break;
 		case 37:
 			//LHU
+			if(mips_cpu_get_debug_level(state) >= 1){
+				fprintf(stderr, "LHU.\n");
+				fprintf(stderr, "rsVal=%08x, dest=%u immed=%08x.\n",srca, rt,immed);
+			}
 			LHU(srca, rt, immed16, state, mem);
 			break;
 		case 40:

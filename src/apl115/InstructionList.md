@@ -22,12 +22,12 @@ No.|Code  |   Meaning                                 | Complexity  | Implemente
 18|JALR  |  Jump and link register                   | 4  XXXX     |     |
 19|JAL   |  Jump and link                            | 4  XXXX     |     |
 20|JR    |  Jump register                            | 3  XXX      |     |
-21|LB    |  Load byte                                | 3  XXX      | YES | 
-22|LBU   |  Load byte unsigned                       | 3  XXX      | YES    | 
-23|LH    |  Load half-word                           | 3  XXX      | YES    | Test for Sign extend
-24|LHU   |  Load half-word unsigned                  | 3  XXX      | YES    | Test for 0 extend
+21|LB    |  Load byte                                | 3  XXX      | YES | | YES
+22|LBU   |  Load byte unsigned                       | 3  XXX      | YES    | | YES
+23|LH    |  Load half-word                           | 3  XXX      | YES    | Test for Sign extend | YES
+24|LHU   |  Load half-word unsigned                  | 3  XXX      | YES    | Test for 0 extend | YES
 25|LUI   |  Load upper immediate                     | 2  XX       | YES    |
-26|LW    |  Load word                                | 2  XX       | YES
+26|LW    |  Load word                                | 2  XX       | YES | | YES
 27|LWL   |  Load word left                           | 5  XXXXX    |
 28|LWR   |  Load word right                          | 5  XXXXX    |
 29|MFHI  |  Move from HI                             | 3  XXX      | YES
