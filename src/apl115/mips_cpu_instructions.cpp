@@ -7,8 +7,6 @@
 
 #include "mips.h"
 #include "mips_cpu.h"
-#include <iostream>
-#include <bitset>
 #include "mips_cpu_extra.h"
 
 using namespace std;

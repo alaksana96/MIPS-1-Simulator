@@ -9,9 +9,8 @@
 
 #include "mips_cpu_decoder.h"
 #include "mips_cpu_instructions.h"
-#include <bitset>
 #include <assert.h>
-#include <iostream>
+
 
 using namespace std;
 

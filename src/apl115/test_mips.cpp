@@ -6,8 +6,7 @@
  */
 
 #include "mips.h"
-#include <bitset>
-#include <iostream>
+
 
 using namespace std;
 
@@ -1833,9 +1832,6 @@ int main(){
 
 	hiVal = 0;
 	lowVal = 0xFFFFFF9C;
-
-	cout << bitset<32>(hi) << endl;
-	cout << bitset<32>(lo) << endl;
 
 	passed = ((hi == hiVal) && (lo == lowVal));
 	mips_test_end_test(testId, passed, "Answer = -100");
