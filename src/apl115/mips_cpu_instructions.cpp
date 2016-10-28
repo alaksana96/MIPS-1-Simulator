@@ -52,6 +52,25 @@ mips_error SRAV(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	return mips_cpu_set_register(state, rd, (uint32_t)(((int32_t)rt >> rs)));
 }
 
+mips_error JR(uint32_t rs, mips_cpu_impl *state){
+	uint32_t currentPC, nextPC;
+	mips_error err = mips_cpu_get_pc(state, &currentPC);
+	err = mips_cpu_get_pc_next(state, &nextPC);
+
+	mips_cpu_set_pc(state, nextPC);
+	return mips_cpu_set_pc_next(state, rs);
+}
+
+mips_error JALR(uint32_t rs, uint32_t rd, mips_cpu_impl *state){
+	uint32_t currentPC, nextPC;
+	mips_error err = mips_cpu_get_pc(state, &currentPC);
+	err = mips_cpu_get_pc_next(state, &nextPC);
+
+	mips_cpu_set_register(state, rd, currentPC+8);
+	mips_cpu_set_pc(state, nextPC);
+	return mips_cpu_set_pc_next(state, rs);
+}
+
 
 mips_error ADD(uint32_t rs, uint32_t rt, uint32_t rd, mips_cpu_impl *state){
 	if(((!isNegative32(rs) && !isNegative32(rt)) && isNegative32((uint32_t)((int32_t)rs + (int32_t)rt)))

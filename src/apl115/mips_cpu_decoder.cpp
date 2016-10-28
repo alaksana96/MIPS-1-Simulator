@@ -61,9 +61,11 @@ mips_error decodeRInstruction(uint32_t instr, mips_mem_h mem, mips_cpu_impl* sta
 		break;
 	case 8:
 		//JR
+		return JR(srca, state);
 		break;
 	case 9:
 		//JALR
+		return JALR(srca, rd, state);
 		break;
 	case 12:
 		//SYSCALL
